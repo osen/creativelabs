@@ -1,0 +1,198 @@
+\documentclass[10pt]{article}
+
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+\usepackage{fancyvrb}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{framed}
+\usepackage{environ}
+\setlength{\parindent}{0pt}
+
+\newenvironment{Listing}
+{\VerbatimEnvironment
+\begin{Verbatim}[frame=lines]}
+{\end{Verbatim}}
+
+\NewEnviron{Note}
+{\begin{center}\colorbox{gray!30}{\parbox{1.0\textwidth}{\BODY}}\end{center}}
+{}
+
+%{\colorbox{blue!30}{\BODY}}
+
+%\newcommand{\Note}[1]{\par\colorbox{blue!30}{#1}}
+
+\begin{document}
+
+\title{Game Engine Programming \\
+  \normalsize Lab 1: An Introduction to CMake}
+
+%\subject{Game Engine Programming}
+%\subtitle{Lab 1 An Introduction to CMake}
+\author{Karsten Pedersen\\ Department of Creative Technology}
+\maketitle
+
+In this unit we aim to build a game engine which will potentially generate
+a number of libraries and will likely have a number of dependencies
+itself on 3rd party libraries. We will also be looking at alternative
+C++ compilers to the one provided by \textit{Microsoft Visual Studio}
+(\textbf{\textit{cl}}). For this reason we will be using \textit{CMake}
+to manage our project for us.
+
+\
+
+The first thing we will need to do is ensure that it is installed and
+added to our \textbf{\textit{PATH}} environment variable.  To do this,
+open up a command prompt or terminal emulator and enter:
+
+\begin{Listing}
+
+  > cmake --version
+
+\end{Listing}
+
+If \textit{CMake} is correctly installed, you should see output similar to:
+
+\begin{Listing}
+
+  cmake version 2.8.12.2
+
+\end{Listing}
+
+Hopefully with that in place we can start creating our initial
+project. The first step is to create a new directory called
+\textbf{\textit{myengine}}. Try to avoid network drives such as
+your \textbf{\textit{H:\textbackslash}} because it is fairly slow to build
+software. Once you have created this directory, we will propulate it with
+a general framework of the project. The following listing shows the beginning of a standard
+C/C++ project layout.
+
+\begin{Listing}
+
+  myengine\
+  |-src\
+  | \-game\
+  |   \-main.cpp
+  \-CMakeLists.txt
+
+\end{Listing}
+
+To get started the \textbf{\textit{main.cpp}} should be populated with a small \textit{Hello World} program as shown in the listing below.
+
+\begin{Listing}
+
+  #include <iostream>
+
+  int main()
+  {
+    std::cout << "Hello World" << std::endl;
+
+    return 0;
+  }
+
+\end{Listing}
+
+Next the file called \textbf{\textit{CMakeLists.txt}} is what instructs
+\textit{CMake} how to build your program from the source.  It can describe
+every aspect about building your project from a single file or multiple
+depending on how complex your build system gets. For example it could be
+instructed to perform tasks such as running test suites, baking lighting,
+compiling to multiple platforms, building installers, etc. However, for now lets start with the bare minimum.
+
+\begin{Listing}
+
+  cmake_minimum_required(VERSION 2.6)
+  project(MYENGINE)
+
+  add_executable(game
+    src/game/main.cpp
+  )
+
+\end{Listing}
+
+The \textbf{\textit{cmake\_minimum\_required}} statement tells
+\textit{CMake} that it only uses older features of the build tool. This
+allows for great backwards compatibility with less updated platforms. As
+we require more modern features, we can bump up the version to unlock them
+at the expense of supporting old operating systems such as \textit{Solaris
+10} or \textit{Microsoft Windows XP}.
+
+The \textbf{\textit{project}} statement tells \textit{CMake} what to
+name the entire project (not just individual libraries or executables
+that it generates). This is useful when creating scripts later on. We
+use all capitals here because otherwise variables are named things like
+\textbf{\textit{myengine\_VERSION}} which looks a bit horrible.
+
+Finally the \textbf{\textit{add\_executable}} command instructs
+\textit{CMake} to create an output executable (\textit{*.exe}
+on \textit{Windows}) with the given name and compiled from the
+specified source files. We could generate a library (\textit{*.lib}
+for \textit{Microsoft Visual C++}, \textit{*.a} for \textit{GNU C/C++ Compiler})
+by using \textbf{\textit{add\_library}} instead. You will encounter this
+later on.
+
+\
+
+Once this file is in place, now we build the project. First we create
+a new directory called \textbf{\textit{build}} in the root of the
+project.  This is where \textit{CMake} puts \textbf{all} of the generated
+files. This is an especially nice feature because it doesn't spam
+your project with clutter.  Then you can easily delete the folder to
+clean the project or simply add it to the \textbf{\textit{.gitignore}}
+file to prevent accidentally committing it into your \textit{Git}
+repository. We then use \textit{CMake} to generate the project and
+finally use \textit{CMake} again to build it. The following listing
+shows this process.
+
+\begin{Listing}
+
+  > mkdir build     # Create the directory
+  > cd build        # Go into the newly created directory
+
+  > cmake ..        # Generate project in this directory but use the
+                    # CMakeLists.txt file from one level up (..)
+
+  > cmake --build . # Build from the files in current directory (.)
+  > Debug\game.exe  # Run the created executable
+
+\end{Listing}
+
+From now on, to trigger rebuilds, simply use the
+\textbf{\textit{cmake --build .}} unless you change machines or delete
+the \textbf{\textit{build}} folder.  Remember however to make sure you
+are in the correct directory. I personally move back into the root of
+the project and compile from there. For example:
+
+\begin{Listing}
+
+  > cd ..
+  > cmake --build build
+
+\end{Listing}
+
+This has the small benefit that you can still use \textit{Git} easily
+from the root of the project and also any relative paths that a simple
+naive program may try to open will work correctly.
+
+\
+
+Finally, the whole point of \textit{CMake} is to use existing
+tools. If you want to use \textit{Microsoft Visual Studio}, you
+can do so by simply double clicking on the \textbf{\textit{*.sln}}
+file within the created \textbf{\textit{build}} directory. You
+can then pretty much use it as normal. Just remember to use the
+\textbf{\textit{CMakeLists.txt}} file instead to add and remove
+\textbf{\textit{*.h}} and \textbf{\textit{*.cpp}} files.
+
+\begin{Note}
+Spend this time at the end of the lab setting up a version control repo
+for your project (i.e \textit{Git}, \textit{Subversion}). Your project
+will likely grow quite large and source control will help you manage it.
+
+\
+
+Once you are happy with using \textit{CMake}. Try adding a new subfolder
+to the \textbf{\textit{src}} directory called \textbf{\textit{myengine}}
+and start adding some initial files in there that you think you might
+need. Try to compile them into a library.  \end{Note}
+
+\end{document}
