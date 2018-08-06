@@ -1,0 +1,113 @@
+\documentclass[10pt]{article}
+
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+\usepackage{fancyvrb}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{framed}
+\usepackage{environ}
+\setlength{\parindent}{0pt}
+
+\input{../../common}
+
+\begin{document}
+
+\title{3D Graphics Programming \\
+  \normalsize Lab 1: Rendering a Triangle}
+
+\author{Karsten Pedersen\\ Department of Creative Technology}
+\maketitle
+
+In this unit we aim to use an industry standard graphics API to draw
+and interact with 3D objects. \Name{OpenGL} as an API is extremely flexible
+but also comes with quite a bit of complexity.  Developing with \Name{OpenGL}
+can often require some initial time to get used to how it works and also
+to set up the data used for the rendering.
+
+\
+
+The first thing we will need to do is to ensure that the project is
+set up and ready to use \Name{OpenGL}. To just get a window appearing
+on the screen we will be using \Name{SDL 2} because not only is the code
+required to do so fairly trivial but also because you are already familiar
+with it.  Other libraries that are also common for this task include
+\Name{[Free]Glut}, \Name{GLFW}, \Name{SFML} and \Name{Allegro}. Open
+the provided \Name{Microsoft Visual Studio} project or generate
+the \Name{CMake} build system.  The code inside \Command{main.cpp}
+should be familiar to you by now. It simply opens up the \Name{SDL 2}
+Window and not much else.  You will see that we are not even creating an
+\Command{SDL\_Renderer} because we are going to be using \Name{OpenGL}
+directly rather than using the basic renderer provided by \Name{SDL 2}
+(which uses either \Name{OpenGL} or \Name{DirectX} underneath depending
+on platform.
+
+\Note{
+\Name{Microsoft Windows} provides a version of \Name{OpenGL} which
+is extremely old (version \textbf{1.2}) and is too inflexible to make
+what we see today as modern games. Luckily a much newer implementation
+of \Name{OpenGL} is provided by the graphics card manufacturer's driver
+(i.e \Name{NVIDIA}, \Name{AMD}, \Name{Intel}, \Name{MESA}). As of writing
+we are at around version \textbf{4.6} which only the very latest hardware
+supports.  However the techniques and functionality covered in these labs
+was actually provided by version \textbf{2.1} which means that your code
+will work on almost all hardware found in the wild.
+
+\
+
+For convenience, rather than use a specific header and library
+(i.e \Command{GL/gl.h}) from each different vendor's SDK, we
+instead use a 3rd party library called \Name{Glew} (Open\textbf{GL}
+\textbf{E}xtension \textbf{W}rangler). This library links the vendor's
+specific implementation with the platforms implementation at runtime so
+we can just use \Name{OpenGL} as usual and not worry about the details.
+
+}
+
+First, lets begin by including the \Name{Glew} header file into our project.
+
+\begin{Listing}
+
+  #include <GL/glew.h>
+
+\end{Listing}
+
+Because \Name{Glew} loads the \Name{OpenGL} library at runtime we also
+need to initialize it.  In your project, just after where you open the
+\Name{SDL 2} window using \Command{SDL\_CreateWindow}, add the following
+function calls.
+
+\begin{Listing}
+
+  context = SDL_GL_CreateContext(window);
+  glewInit();
+
+\end{Listing}
+
+\Note{
+This must be \textbf{after} the call to open the window because otherwise
+there is no window for \Name{OpenGL} to bind a context to and the call
+will fail.
+}
+
+With this in place we are now ready to start with \Name{OpenGL}. What
+we are first going to do to confirm everything is working is change
+the screen to the color red. The following listing will first set the
+current \Name{OpenGL} clear color to red, will then actually instruct
+\Name{OpenGL} to clear the screen and finally it will atomically swap
+the \Name{OpenGL} memory buffer with that of the screen buffer (to
+eliminate flicker).
+
+\begin{Listing}
+
+  glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
+  SDL_GL_SwapWindow(window);
+
+\end{Listing}
+
+With that in place, compile the project and run it. You should hopefully
+see the following.
+
+\Todo{Big red OpenGL window}
+
+\end{document}

@@ -1,0 +1,32 @@
+%\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{graphicx}
+
+\newenvironment{Listing}
+{\VerbatimEnvironment
+\begin{Verbatim}[frame=lines]}
+{\end{Verbatim}}
+
+\newcommand{\Todo}[1]{\begin{center}\colorbox{red!30}{\parbox{0.9\textwidth}{\textbf{\textit{TODO}}\\#1}}\end{center}}
+\newcommand{\Note}[1]{\begin{center}\colorbox{gray!30}{\parbox{1.0\textwidth}{\textbf{\textit{Note:}}\\#1}}\end{center}}
+
+\newcommand{\Name}[1]{\textit{#1}}
+\newcommand{\Command}[1]{\textbf{\textit{#1}}}
+
+\newcommand{\Ref}[1]{\textbf{Figure \ref{fig:#1}}}
+\newcommand{\Sec}[1]{\textbf{Section \ref{sec:#1}}}
+
+\newcommand{\Figure}[3]{\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.5\textwidth]{#1}
+  \caption{\textit{#2}}
+  \label{fig:#3}
+  \end{figure}}
+
+\newcommand{\FigureFull}[3]{\begin{figure}[H]
+  \centering
+  \includegraphics[width=1.0\textwidth]{#1}
+  \caption{\textit{#2}}
+  \label{fig:#3}
+  \end{figure}}
