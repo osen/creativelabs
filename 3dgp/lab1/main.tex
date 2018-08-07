@@ -63,23 +63,33 @@ we can just use \Name{OpenGL} as usual and not worry about the details.
 
 }
 
-First, lets begin by including the \Name{Glew} header file into our project.
+First, lets begin by including the \Name{SDL 2}/\Name{OpenGL} binding
+layer header and the \Name{Glew} header file into our project.
 
 \begin{Listing}
 
+  #include <SDL2/SDL_opengl.h>
   #include <GL/glew.h>
 
 \end{Listing}
 
-Because \Name{Glew} loads the \Name{OpenGL} library at runtime we also
-need to initialize it.  In your project, just after where you open the
-\Name{SDL 2} window using \Command{SDL\_CreateWindow}, add the following
-function calls.
+Next we need to create an \Name{OpenGL} rendering context within
+the created \Name{SDL 2} window and because \Name{Glew} loads the
+\Name{OpenGL} library and extensions at runtime we also need to initialize
+it. In your project, just after where you open the \Name{SDL 2} window
+using \Command{SDL\_CreateWindow}, add the following function calls.
 
 \begin{Listing}
 
-  context = SDL_GL_CreateContext(window);
-  glewInit();
+  if(!SDL_GL_CreateContext(window))
+  {
+    throw std::exception();
+  }
+
+  if(glewInit() != GLEW_OK)
+  {
+    throw std::exception();
+  }
 
 \end{Listing}
 
@@ -109,5 +119,12 @@ With that in place, compile the project and run it. You should hopefully
 see the following.
 
 \Todo{Big red OpenGL window}
+
+Now we can finally begin using the main essence of \Name{OpenGL}. In 3D
+graphics almost everything is made up of triangles so lets start with
+trying to draw one. \Ref{process} should give you an overview
+of the tasks required to do this.
+
+\Figure{process}{Diagram showing the series of tasks in order to render a triangle}{process}
 
 \end{document}
