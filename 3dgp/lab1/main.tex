@@ -67,24 +67,21 @@ we can just use \Name{OpenGL} as usual and not worry about the details.
 First, lets begin by including the \Name{Glew} header file into our
 project so we can start using \Name{OpenGL} functions.
 
-\begin{Listing}
-
+\begin{Code}
   #include <GL/glew.h>
-
-\end{Listing}
+\end{Code}
 
 We now need to instruct \Name{SDL 2} to create a window that is
 suitable for creating an \Name{OpenGL} rendering context. To do this
 we need to modify the \Command{SDL\_CreateWindow} function call and pass
 \Command{SDL\_WINDOW\_OPENGL} as a parameter.
 
-\begin{Listing}
-
-SDL_Window *window = SDL_CreateWindow("Triangle",
+\begin{Code}
+  SDL_Window *window = SDL_CreateWindow("Triangle",
     SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-    WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
-
-\end{Listing}
+    WINDOW_WIDTH, WINDOW_HEIGHT,
+    SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+\end{Code}
 
 Next we need to create an \Name{OpenGL} rendering context within
 the created \Name{SDL 2} window and because \Name{Glew} loads the
@@ -92,8 +89,7 @@ the created \Name{SDL 2} window and because \Name{Glew} loads the
 it. In your project, just after where you open the \Name{SDL 2} window
 using \Command{SDL\_CreateWindow}, add the following function calls.
 
-\begin{Listing}
-
+\begin{Code}
   if(!SDL_GL_CreateContext(window))
   {
     throw std::exception();
@@ -103,8 +99,7 @@ using \Command{SDL\_CreateWindow}, add the following function calls.
   {
     throw std::exception();
   }
-
-\end{Listing}
+\end{Code}
 
 \Note{
 This must be \textbf{after} the call to open the window because otherwise
@@ -121,13 +116,11 @@ current \Name{OpenGL} clear color to red, will then actually instruct
 flicker). You will want to place this code where you would usually start
 drawing to the screen in a standard \Name{SDL 2} application.
 
-\begin{Listing}
-
+\begin{Code}
   glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   SDL_GL_SwapWindow(window);
-
-\end{Listing}
+\end{Code}
 
 \Note{
 Unlike when using \Name{SDL} where colors usually range between
@@ -162,15 +155,13 @@ We will use 3D points (include z component) because we aim to get into
 drawing 3D objects. For 2D components such as GUI, you will likely not
 include the z component to save memory on the GPU.
 
-\begin{Listing}
-
+\begin{Code}
   const GLfloat positions[] = {
     0.0f, 0.5f, 0.0f,
     -0.5f, -0.5f, 0.0f,
     0.5f, -0.5f, 0.0f
   };
-
-\end{Listing}
+\end{Code}
 
 \Note{
 
@@ -192,8 +183,7 @@ active \Name{VBO} for operations, upload the data to the currently bound
 \Name{VBO} and finally unbind the buffer again to return the state back
 to normal.
 
-\begin{Listing}
-
+\begin{Code}
   GLuint positionsVboId = 0;
 
   // Create a new VBO on the GPU and bind it
@@ -211,8 +201,7 @@ to normal.
 
   // Reset the state
   glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-\end{Listing}
+\end{Code}
 
 \Note{
 The \Command{GLuint} is again, basically just a typedef of an
@@ -241,8 +230,7 @@ it, bind the \Name{VBO} and assign our \Name{VBO} containing the vertex
 positions to be our first entry (position \Command{0}). Finally we unbind
 the \Name{VBO} and unbind the \Name{VAO} to reset to the default state.
 
-\begin{Listing}
-
+\begin{Code}
   GLuint vaoId = 0;
 
   // Create a new VAO on the GPU and bind it
@@ -262,8 +250,7 @@ the \Name{VBO} and unbind the \Name{VAO} to reset to the default state.
   // Reset the state
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
-
-\end{Listing}
+\end{Code}
 
 \FigureFull{images/vao}{Diagram showing the relationship between VBOs, VAOs and shader programs}{vao}
 
@@ -295,8 +282,7 @@ shaders such as the \Name{Vertex Shader}, \Name{Fragment Shader},
 our shader program by first writing and compiling a simple \Name{Vertex
 Shader}.
 
-\begin{Listing}
-
+\begin{Code}
   const GLchar *vertexShaderSrc =
     "attribute vec3 in_Position;             " \
     "                                        " \
@@ -317,8 +303,7 @@ Shader}.
   {
     throw std::exception();
   }
-
-\end{Listing}
+\end{Code}
 
 This \Name{GLSL} is the simplest example of a working \Name{Vertex
 Shader}. Notice the variable-like declaration at the top of the
@@ -334,8 +319,7 @@ shader from a file.  With that working, the next step is for the
 \Name{Fragment Shader}. The code is very similar so make sure not to
 get the two confused.
 
-\begin{Listing}
-
+\begin{Code}
   const GLchar *fragmentShaderSrc =
     "void main()                        " \
     "{                                  " \
@@ -353,8 +337,7 @@ get the two confused.
   {
     throw std::exception();
   }
-
-\end{Listing}
+\end{Code}
 
 Again, the \Name{GLSL} code is very simple and states that for any
 fragment it draws, use the color blue (\Command{0, 0, 1, 1}). Now we
@@ -366,8 +349,7 @@ location)? We need to instruct the shader whilst linking to put our
 input variable \Command{in\_Position} at that position too so the correct
 attribute stream matches up.
 
-\begin{Listing}
-
+\begin{Code}
   // Create new shader program and attach our shader objects
   GLuint programId = glCreateProgram();
   glAttachShader(programId, vertexShaderId);
@@ -392,8 +374,7 @@ attribute stream matches up.
   glDeleteShader(vertexShaderId);
   glDetachShader(programId, fragmentShaderId);
   glDeleteShader(fragmentShaderId);
-
-\end{Listing}
+\end{Code}
 
 And that is it for the preparation. Congratulations! We can now finally
 perform the drawing operation.  In compartison this is an extremely
@@ -403,8 +384,7 @@ it to draw. Then finally we reset the state back. So just under your
 \Command{glClear} line add the following to receive a result similar to
 that shown in \Ref{final}.
 
-\begin{Listing}
-
+\begin{Code}
   // Instruct OpenGL to use our shader program and our VAO
   glUseProgram(programId);
   glBindVertexArray(vaoId);
@@ -415,8 +395,7 @@ that shown in \Ref{final}.
   // Reset the state
   glBindVertexArray(0);
   glUseProgram(0);
-
-\end{Listing}
+\end{Code}
 
 \Figure{images/final}{A screenshot of our \Name{OpenGL} program drawing a single triangle}{final}
 

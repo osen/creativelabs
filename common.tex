@@ -2,11 +2,31 @@
 \usepackage{xcolor}
 \usepackage{float}
 \usepackage{graphicx}
+\usepackage{listings}
+\usepackage{mdframed}
+\usepackage{tcolorbox}
 
-\newenvironment{Listing}
+\definecolor{customnavy}{RGB}{0,0,100}
+
+\lstnewenvironment{CodeInner}{%
+}{%
+}
+
+\newenvironment{CodeOld}{%
+\begin{CodeInner}}{%
+\end{CodeInner}}
+
+%\newenvironment{Code}
+%{\VerbatimEnvironment
+%\begin{mdframed}[backgroundcolor=customnavy,fontcolor=white,linewidth=0]
+%\begin{Verbatim}
+%}{\end{Verbatim}\end{mdframed}}
+
+\newenvironment{Code}
 {\VerbatimEnvironment
-\begin{Verbatim}[frame=lines]}
-{\end{Verbatim}}
+\begin{tcolorbox}[arc=0pt,outer arc=0pt,before skip=10px, after skip=10px, colframe=white, colback=customnavy, fontupper=\color{white}]
+\begin{Verbatim}
+}{\end{Verbatim}\end{tcolorbox}}
 
 \newcommand{\Todo}[1]{\begin{center}\colorbox{red!30}{\parbox{0.9\textwidth}{\textbf{\textit{TODO}}\\#1}}\end{center}}
 \newcommand{\Note}[1]{\begin{center}\colorbox{gray!30}{\parbox{1.0\textwidth}{\textbf{\textit{Note:}}\\#1}}\end{center}}
