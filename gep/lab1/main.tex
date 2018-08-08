@@ -13,9 +13,7 @@
 \begin{Verbatim}[frame=lines]}
 {\end{Verbatim}}
 
-\NewEnviron{Note}
-{\begin{center}\colorbox{gray!30}{\parbox{1.0\textwidth}{\BODY}}\end{center}}
-{}
+\input{../../common}
 
 %{\colorbox{blue!30}{\BODY}}
 
@@ -44,19 +42,15 @@ The first thing we will need to do is ensure that it is installed and
 added to our \textbf{\textit{PATH}} environment variable.  To do this,
 open up a command prompt or terminal emulator and enter:
 
-\begin{Listing}
-
+\begin{Code}
   > cmake --version
-
-\end{Listing}
+\end{Code}
 
 If \textit{CMake} is correctly installed, you should see output similar to:
 
-\begin{Listing}
-
+\begin{Code}
   cmake version 2.8.12.2
-
-\end{Listing}
+\end{Code}
 
 Hopefully with that in place we can start creating our initial
 project. The first step is to create a new directory called
@@ -66,20 +60,17 @@ software. Once you have created this directory, we will propulate it with
 a general framework of the project. The following listing shows the beginning of a standard
 C/C++ project layout.
 
-\begin{Listing}
-
+\begin{Code}
   myengine\
   |-src\
   | \-game\
   |   \-main.cpp
   \-CMakeLists.txt
-
-\end{Listing}
+\end{Code}
 
 To get started the \textbf{\textit{main.cpp}} should be populated with a small \textit{Hello World} program as shown in the listing below.
 
-\begin{Listing}
-
+\begin{Code}
   #include <iostream>
 
   int main()
@@ -88,8 +79,7 @@ To get started the \textbf{\textit{main.cpp}} should be populated with a small \
 
     return 0;
   }
-
-\end{Listing}
+\end{Code}
 
 Next the file called \textbf{\textit{CMakeLists.txt}} is what instructs
 \textit{CMake} how to build your program from the source.  It can describe
@@ -98,16 +88,14 @@ depending on how complex your build system gets. For example it could be
 instructed to perform tasks such as running test suites, baking lighting,
 compiling to multiple platforms, building installers, etc. However, for now lets start with the bare minimum.
 
-\begin{Listing}
-
+\begin{Code}
   cmake_minimum_required(VERSION 2.6)
   project(MYENGINE)
 
   add_executable(game
     src/game/main.cpp
   )
-
-\end{Listing}
+\end{Code}
 
 The \textbf{\textit{cmake\_minimum\_required}} statement tells
 \textit{CMake} that it only uses older features of the build tool. This
@@ -143,8 +131,7 @@ repository. We then use \textit{CMake} to generate the project and
 finally use \textit{CMake} again to build it. The following listing
 shows this process.
 
-\begin{Listing}
-
+\begin{Code}
   > mkdir build     # Create the directory
   > cd build        # Go into the newly created directory
 
@@ -153,8 +140,7 @@ shows this process.
 
   > cmake --build . # Build from the files in current directory (.)
   > Debug\game.exe  # Run the created executable
-
-\end{Listing}
+\end{Code}
 
 From now on, to trigger rebuilds, simply use the
 \textbf{\textit{cmake --build .}} unless you change machines or delete
@@ -162,12 +148,10 @@ the \textbf{\textit{build}} folder.  Remember however to make sure you
 are in the correct directory. I personally move back into the root of
 the project and compile from there. For example:
 
-\begin{Listing}
-
+\begin{Code}
   > cd ..
   > cmake --build build
-
-\end{Listing}
+\end{Code}
 
 This has the small benefit that you can still use \textit{Git} easily
 from the root of the project and also any relative paths that a simple
@@ -183,7 +167,7 @@ can then pretty much use it as normal. Just remember to use the
 \textbf{\textit{CMakeLists.txt}} file instead to add and remove
 \textbf{\textit{*.h}} and \textbf{\textit{*.cpp}} files.
 
-\begin{Note}
+\Note{
 Spend this time at the end of the lab setting up a version control repo
 for your project (i.e \textit{Git}, \textit{Subversion}). Your project
 will likely grow quite large and source control will help you manage it.
@@ -193,6 +177,8 @@ will likely grow quite large and source control will help you manage it.
 Once you are happy with using \textit{CMake}. Try adding a new subfolder
 to the \textbf{\textit{src}} directory called \textbf{\textit{myengine}}
 and start adding some initial files in there that you think you might
-need. Try to compile them into a library.  \end{Note}
+need. Try to compile them into a library.
+
+}
 
 \end{document}
