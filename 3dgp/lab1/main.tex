@@ -64,13 +64,25 @@ we can just use \Name{OpenGL} as usual and not worry about the details.
 
 }
 
-First, lets begin by including the \Name{SDL 2}/\Name{OpenGL} binding
-layer header and the \Name{Glew} header file into our project.
+First, lets begin by including the \Name{Glew} header file into our
+project so we can start using \Name{OpenGL} functions.
 
 \begin{Listing}
 
-  #include <SDL2/SDL_opengl.h>
   #include <GL/glew.h>
+
+\end{Listing}
+
+We now need to instruct \Name{SDL 2} to create a window that is
+suitable for creating an \Name{OpenGL} rendering context. To do this
+we need to modify the \Command{SDL\_CreateWindow} function call and pass
+\Command{SDL\_WINDOW\_OPENGL} as a parameter.
+
+\begin{Listing}
+
+SDL_Window *window = SDL_CreateWindow("Triangle",
+    SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+    WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
 \end{Listing}
 
@@ -131,7 +143,7 @@ point values are also handled very quickly on a maths co-processor
 With that in place, compile the project and run it. You should hopefully
 see a similar output to \Ref{example}.
 
-\Figure{images/example}{A screenshot of our \Name{OpenGL} program clearing the screen}{example}
+\Figure{images/example}{A screenshot of our \Name{OpenGL} program simply clearing the screen red}{example}
 
 Now we can finally begin using the core functionality of \Name{OpenGL}. In
 3D graphics almost everything is made up of triangles so lets start with
