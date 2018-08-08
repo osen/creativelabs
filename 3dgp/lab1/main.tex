@@ -165,9 +165,9 @@ include the z component to save memory on the GPU.
 \begin{Listing}
 
   const GLfloat positions[] = {
-    -0.5f, 0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f
+    0.0f, 0.5f, 0.0f,
+    -0.5f, -0.5f, 0.0f,
+    0.5f, -0.5f, 0.0f
   };
 
 \end{Listing}
@@ -183,14 +183,6 @@ reason it cannot guarantee or make the assumption that the platform will provide
 functionality. In this case it would typedef to the next best thing
 (such as a \Command{double}).
 
-}
-
-\Todo{
-Have a play with these coordinates and you will notice that by default
-\Name{OpenGL} coordinates are between \Command{-1} and \Command{1} in
-both the x and y axis.  This is basically the \Name{normalized device
-coordinates} and by using a different \Name{Projection} matrix, this
-will change. We will cover this in a future lab.
 }
 
 When we run the program, this data is in our RAM (or stack). We
@@ -281,10 +273,177 @@ not yet know how we want it to be drawn. What we need to do is write
 a very small program to upload to the GPU that uses the data to do the
 drawing. This small program is known as the shader program.
 
-\Todo{GLSL}
-\Todo{Vertex Shader}
-\Todo{Fragment Shader}
-\Todo{Shader Program (glBindAttribLocation)}
-\Todo{A note on using OpenCL to do other stuff, collision, physics, AI/ Good at parallel}
+Shader programs are written using \Name{GL Shader Language}
+(\Name{GLSL}). The \Name{Microsoft DirectX} equivalent is \Name{High Level
+Shader Language} (\Name{HLSL}) for example.  The syntax of \Name{GLSL}
+is very similar to \Name{C/C++} but has many built in types and functions
+which are useful for graphics programming such as \Command{vec4} and
+\Command{pow}. As with \Name{OpenGL} itself, there are many different
+versions of \Name{GLSL}. We will be using \Command{1.2} which is fairly
+old. Again we will be doing this to reach maximum compatibility with
+different hardware and drivers. The very latest at the time of writing
+is \Command{4.6 core} and there are a small number of differences
+between them that you may want to research if you are interested.
+
+\
+
+Shader programs are similar to standard \Name{C/C++} programs in that
+they are made up of multiple objects. These objects consist of different
+shaders such as the \Name{Vertex Shader}, \Name{Fragment Shader},
+\Name{Teselation Shader}, etc. At the very least a program must have a
+\Name{Vertex Shader} and a \Name{Fragment Shader}. We will begin creating
+our shader program by first writing and compiling a simple \Name{Vertex
+Shader}.
+
+\begin{Listing}
+
+  const GLchar *vertexShaderSrc =
+    "attribute vec3 in_Position;             " \
+    "                                        " \
+    "void main()                             " \
+    "{                                       " \
+    "  gl_Position = vec4(in_Position, 1.0); " \
+    "}                                       ";
+
+  // Create a new vertex shader, attach source code, compile it and
+  // check for errors.
+  GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(vertexShaderId, 1, &vertexShaderSrc, NULL);
+  glCompileShader(vertexShaderId);
+  GLint success = 0;
+  glGetShaderiv(vertexShaderId, GL_COMPILE_STATUS, &success);
+
+  if(!success)
+  {
+    throw std::exception();
+  }
+
+\end{Listing}
+
+This \Name{GLSL} is the simplest example of a working \Name{Vertex
+Shader}. Notice the variable-like declaration at the top of the
+\Name{GLSL} called \Command{in\_Position}? This is what allows us to
+read the stream of data from the \Name{VBO} that we prepared earlier. The
+\Name{GLSL} code currently states that it should use the \Command{vec3}
+that it receives directly by assigning it to the final output vertex
+position (\Command{gl\_Position}).  An awkward part here is that
+the \Name{GLSL} is embedded into the \Name{C/C++} code as a string.
+This makes multi-line entry a bit awkward. A more scalable solution
+is either using some \Command{MACRO} trickery or simply loading the
+shader from a file.  With that working, the next step is for the
+\Name{Fragment Shader}. The code is very similar so make sure not to
+get the two confused.
+
+\begin{Listing}
+
+  const GLchar *fragmentShaderSrc =
+    "void main()                        " \
+    "{                                  " \
+    "  gl_FragColor = vec4(0, 0, 1, 1); " \
+    "}                                  ";
+
+  // Create a new fragment shader, attach source code, compile it and
+  // check for errors.
+  GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(fragmentShaderId, 1, &fragmentShaderSrc, NULL);
+  glCompileShader(fragmentShaderId);
+  glGetShaderiv(fragmentShaderId, GL_COMPILE_STATUS, &success);
+
+  if(!success)
+  {
+    throw std::exception();
+  }
+
+\end{Listing}
+
+Again, the \Name{GLSL} code is very simple and states that for any
+fragment it draws, use the color blue (\Command{0, 0, 1, 1}). Now we
+need to link our new shader objects together as part of our complete
+shader program.  We do this by attaching the shader objects and linking
+the program. However, remember when we created our \Name{VAO} we set
+the positions \Name{VBO} to position \Command{0} (the first and only
+location)? We need to instruct the shader whilst linking to put our
+input variable \Command{in\_Position} at that position too so the correct
+attribute stream matches up.
+
+\begin{Listing}
+
+  // Create new shader program and attach our shader objects
+  GLuint programId = glCreateProgram();
+  glAttachShader(programId, vertexShaderId);
+  glAttachShader(programId, fragmentShaderId);
+
+  // Ensure the VAO "position" attribute stream gets set as the first position
+  // during the link.
+  glBindAttribLocation(programId, 0, "in_Position");
+
+  // Perform the link and check for failure
+  glLinkProgram(programId);
+  glGetProgramiv(programId, GL_LINK_STATUS, &success);
+
+  if(!success)
+  {
+    throw std::exception();
+  }
+
+  // Detach and destroy the shader objects. These are no longer needed
+  // because we now have a complete shader program.
+  glDetachShader(programId, vertexShaderId);
+  glDeleteShader(vertexShaderId);
+  glDetachShader(programId, fragmentShaderId);
+  glDeleteShader(fragmentShaderId);
+
+\end{Listing}
+
+And that is it for the preparation. Congratulations! We can now finally
+perform the drawing operation.  In compartison this is an extremely
+simple task. We tell \Name{OpenGL} to use our created shader, we tell
+it to use our created triangle data (\Name{VAO}) and finally we tell
+it to draw. Then finally we reset the state back. So just under your
+\Command{glClear} line add the following to receive a result similar to
+that shown in \Ref{final}.
+
+\begin{Listing}
+
+  // Instruct OpenGL to use our shader program and our VAO
+  glUseProgram(programId);
+  glBindVertexArray(vaoId);
+
+  // Draw 3 vertices (a triangle)
+  glDrawArrays(GL_TRIANGLES, 0, 3);
+
+  // Reset the state
+  glBindVertexArray(0);
+  glUseProgram(0);
+
+\end{Listing}
+
+\Figure{images/final}{A screenshot of our \Name{OpenGL} program drawing a single triangle}{final}
+
+\Note{
+The important thing to note is that all of our data is now stored within
+the graphics card by the time it comes to drawing. This means that rather
+than sending across all the data each frame (as is the case with software
+rendered \Name{SDL}), with \Name{OpenGL} we can instead just refer to
+which buffer to draw (via an ID) which minimizes the data sent between
+the CPU and GPU to help achieve maximum performance.
+}
+
+Have a play with the position coordinates that you upload to the
+GPU. You will notice that by default \Name{OpenGL} coordinates
+are between \Command{-1} and \Command{1} in both the x and y axis.
+This is basically the \Name{normalized device coordinates} and by using
+a different \Name{Projection} matrix, this will change. We will cover
+this in a future lab.
+
+\
+
+There was a lot to cover in this lab. You will notice that you now have
+quite a bit of code in your main file.  Spend time looking into different
+ways to manage this code. In particular, think about reusability. You
+might want to try putting seperate parts into different functions
+or classes.
+
+%\Todo{A note on using OpenCL to do other stuff, collision, physics, AI/ Good at parallel}
 
 \end{document}
