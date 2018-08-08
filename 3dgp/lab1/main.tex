@@ -164,7 +164,6 @@ include the z component to save memory on the GPU.
 \end{Code}
 
 \Note{
-
 Don't get too hung up on the \Name{OpenGL} types. For example
 \Command{GLfloat} is just a typedef. On almost all platforms it will be a
 typedef of the standard \Command{float}. The only reason for \Name{OpenGL}
@@ -245,7 +244,9 @@ the \Name{VBO} and unbind the \Name{VAO} to reset to the default state.
 
   // Bind the position VBO and assign it to position 0 on the bound VAO
   glBindBuffer(GL_ARRAY_BUFFER, positionsVboId);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void *)0);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+    3 * sizeof(GLfloat), (void *)0);
 
   // Reset the state
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -418,7 +419,7 @@ this in a future lab.
 \
 
 There was a lot to cover in this lab. You will notice that you now have
-quite a bit of code in your main file.  Spend time looking into different
+quite a bit of code in your \Command{main.cpp} file.  Spend time looking into different
 ways to manage this code. In particular, think about reusability. You
 might want to try putting seperate parts into different functions
 or classes.
