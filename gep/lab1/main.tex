@@ -1,6 +1,6 @@
 \documentclass[10pt]{article}
 
-\usepackage[a4paper, total={6in, 8in}]{geometry}
+\usepackage[a4paper, total={6in, 10in}]{geometry}
 \usepackage{fancyvrb}
 \usepackage{color}
 \usepackage{xcolor}
@@ -79,9 +79,10 @@ To get started the \textbf{\textit{main.cpp}} should be populated with a small \
 Next the file called \textbf{\textit{CMakeLists.txt}} is what instructs
 \textit{CMake} how to build your program from the source.  It can describe
 every aspect about building your project from a single file or multiple
-depending on how complex your build system gets. For example it could be
-instructed to perform tasks such as running test suites, baking lighting,
-compiling to multiple platforms, building installers, etc. However, for now lets start with the bare minimum.
+depending on how complex your build system gets. For example it could
+be instructed to perform tasks such as running test suites, generating
+documentation, baking lighting, compiling to multiple platforms, building
+installers, etc. However, for now lets start with the bare minimum.
 
 \begin{Code}
   cmake_minimum_required(VERSION 2.6)
@@ -166,6 +167,10 @@ can then pretty much use it as normal. Just remember to use the
 Spend this time at the end of the lab setting up a version control repo
 for your project (i.e \textit{Git}, \textit{Subversion}). Your project
 will likely grow quite large and source control will help you manage it.
+Simply check in everything apart from the \Command{build} folder. This
+could be added to your \Command{.gitignore} file. With a bit of practice,
+you will start to see that \Name{Git} and \Name{CMake} work very well
+together and why they are such common tools to use within the industry.
 
 \
 
@@ -178,6 +183,6 @@ will start to begin looking similar to \Ref{additional}.
 
 }
 
-\Figure{images/additional}{The structure of a slightly more developed project}{additional}
+\FigureFull{images/additional}{The structure of a slightly more developed project}{additional}
 
 \end{document}
