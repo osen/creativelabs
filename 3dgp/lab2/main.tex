@@ -186,9 +186,13 @@ glBindBuffer(GL_ARRAY_BUFFER, colorsVboId);
 // Upload a copy of the data from memory into the new VBO
 glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
 
-// Bind the color VBO, assign it to position 1 on the bound VAO and flag it to be used
+// Bind the color VBO, assign it to position 1 on the bound VAO
+// and flag it to be used
 glBindBuffer(GL_ARRAY_BUFFER, colorsVboId);
-glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void *)0);
+
+glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE,
+  4 * sizeof(GLfloat), (void *)0);
+
 glEnableVertexAttribArray(1)
 \end{Code}
 
