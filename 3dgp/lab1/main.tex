@@ -226,8 +226,12 @@ lightmap coordinates, it will start to make more sense why it is now
 a required step. \Ref{vao} may help explain the interactions between
 these concepts. The following listing will create the \Name{VAO}, bind
 it, bind the \Name{VBO} and assign our \Name{VBO} containing the vertex
-positions to be our first entry (position \Command{0}). Finally we unbind
-the \Name{VBO} and unbind the \Name{VAO} to reset to the default state.
+positions to be our first entry (position \Command{0}). The position
+\Command{0} will then be flagged as \Name{enabled} so that it will be
+streamed into the shader as an attribute stream later on (This step
+is required to prevent unused streams from passing garbage data into
+the shader).  Finally we unbind the \Name{VBO} and unbind the \Name{VAO}
+to reset to the default state.
 
 \begin{Code}
   GLuint vaoId = 0;
@@ -242,11 +246,14 @@ the \Name{VBO} and unbind the \Name{VAO} to reset to the default state.
 
   glBindVertexArray(vaoId);
 
-  // Bind the position VBO and assign it to position 0 on the bound VAO
+  // Bind the position VBO, assign it to position 0 on the bound VAO
+  // and flag it to be used
   glBindBuffer(GL_ARRAY_BUFFER, positionsVboId);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
     3 * sizeof(GLfloat), (void *)0);
+
+  glEnableVertexAttribArray(0);
 
   // Reset the state
   glBindBuffer(GL_ARRAY_BUFFER, 0);
