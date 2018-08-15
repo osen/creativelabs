@@ -4,3 +4,6 @@ all:
 
 	cd 3dgp/lab1 && pdflatex main.tex
 	mv 3dgp/lab1/main.pdf 3dgp/lab1/3dgp-lab1-triangle.pdf
+
+	cd 3dgp/lab2 && pdflatex main.tex
+	mv 3dgp/lab2/main.pdf 3dgp/lab2/3dgp-lab2-shaders.pdf

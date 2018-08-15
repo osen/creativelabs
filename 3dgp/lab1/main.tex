@@ -285,10 +285,13 @@ between them that you may want to research if you are interested.
 Shader programs are similar to standard \Name{C/C++} programs in that
 they are made up of multiple objects. These objects consist of different
 shaders such as the \Name{Vertex Shader}, \Name{Fragment Shader},
-\Name{Teselation Shader}, etc. At the very least a program must have a
-\Name{Vertex Shader} and a \Name{Fragment Shader}. We will begin creating
-our shader program by first writing and compiling a simple \Name{Vertex
-Shader}.
+\Name{Teselation Shader}, etc. At the very least a program must have
+a \Name{Vertex Shader} and a \Name{Fragment Shader}. The \Name{Vertex
+Shader} deals with the positions of the shape, such as the three points of
+a triangle whereas the \Name{Fragment Shader} deals with the fragments
+within a shape, so drawing all the pixels that reside within the
+area a triangle.  We will begin creating our shader program
+by first writing and compiling a simple \Name{Vertex Shader}.
 
 \begin{Code}
   const GLchar *vertexShaderSrc =
