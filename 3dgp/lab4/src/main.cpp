@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
       }
     }
 
-    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     shader->setUniform("in_Lightness", 0.5f);

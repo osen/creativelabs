@@ -123,3 +123,8 @@ void ShaderProgram::setUniform(std::string uniform, float value)
   glUniform1f(uniformId, value);
   glUseProgram(0);
 }
+
+GLuint ShaderProgram::getId()
+{
+  return id;
+}

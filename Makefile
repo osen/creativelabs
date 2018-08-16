@@ -7,3 +7,6 @@ all:
 
 	cd 3dgp/lab2 && pdflatex main.tex
 	mv 3dgp/lab2/main.pdf 3dgp/lab2/3dgp-lab2-shaders.pdf
+
+	cd 3dgp/lab3 && pdflatex main.tex
+	mv 3dgp/lab3/main.pdf 3dgp/lab3/3dgp-lab3-architecture.pdf
