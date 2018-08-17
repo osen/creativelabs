@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(TEXTURES)
+project(MODEL)
 
 include_directories(
   contrib
@@ -13,14 +13,16 @@ if(MSVC)
   )
 endif()
 
-add_executable(textures
+add_executable(model
   src/main.cpp
   src/VertexBuffer.cpp
   src/VertexArray.cpp
   src/ShaderProgram.cpp
+  src/Texture.cpp
+  contrib/stb_image/stb_image.cpp
 )
 
-target_link_libraries(textures
+target_link_libraries(model
   SDL2 GLU GLEW GL
 )
 

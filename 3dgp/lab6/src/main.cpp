@@ -1,6 +1,7 @@
 #include "VertexBuffer.h"
 #include "VertexArray.h"
 #include "ShaderProgram.h"
+#include "Texture.h"
 
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
@@ -8,8 +9,8 @@
 
 #include <exception>
 
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
+#define WINDOW_WIDTH 800
+#define WINDOW_HEIGHT 600
 
 int main(int argc, char *argv[])
 {
@@ -34,23 +35,34 @@ int main(int argc, char *argv[])
   }
 
   VertexBuffer *positions = new VertexBuffer();
-  positions->add(glm::vec3(0.0f, 0.5f, 0.0f));
+  positions->add(glm::vec3(-0.5f, 0.5f, 0.0f));
   positions->add(glm::vec3(-0.5f, -0.5f, 0.0f));
   positions->add(glm::vec3(0.5f, -0.5f, 0.0f));
+  positions->add(glm::vec3(0.5f, -0.5f, 0.0f));
+  positions->add(glm::vec3(0.5f, 0.5f, 0.0f));
+  positions->add(glm::vec3(-0.5f, 0.5f, 0.0f));
 
-  VertexBuffer *colors = new VertexBuffer();
-  colors->add(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-  colors->add(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-  colors->add(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+  VertexBuffer *texCoords = new VertexBuffer();
+  texCoords->add(glm::vec2(0.0f, 0.0f));
+  texCoords->add(glm::vec2(0.0f, 1.0f));
+  texCoords->add(glm::vec2(1.0f, 1.0f));
+  texCoords->add(glm::vec2(1.0f, 1.0f));
+  texCoords->add(glm::vec2(1.0f, 0.0f));
+  texCoords->add(glm::vec2(0.0f, 0.0f));
 
   VertexArray *shape = new VertexArray();
   shape->setBuffer("in_Position", positions);
-  shape->setBuffer("in_Color", colors);
+  shape->setBuffer("in_TexCoord", texCoords);
 
   ShaderProgram *shader = new ShaderProgram("simple.vert", "simple.frag");
+  Texture *texture = new Texture("texture.png");
+  Texture *lightmap = new Texture("lightmap.png");
+  shader->setUniform("in_Texture", texture);
+  shader->setUniform("in_Lightmap", lightmap);
 
   bool quit = false;
   float angle = 0;
+  bool multiTex = true;
 
   //glEnable(GL_CULL_FACE);
 
@@ -64,18 +76,30 @@ int main(int argc, char *argv[])
       {
         quit = true;
       }
+      else if(event.type == SDL_KEYDOWN)
+      {
+        multiTex = !multiTex;
+
+        if(multiTex)
+        {
+          shader->setUniform("in_Lightmap", lightmap);
+        }
+        else
+        {
+          shader->setUniform("in_Lightmap", (Texture *)NULL);
+        }
+      }
     }
 
     glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    shader->setUniform("in_Lightness", 0.5f);
     glm::mat4 model(1.0f);
 
     // Draw with perspective projection matrix
     shader->setUniform("in_Projection", glm::perspective(glm::radians(45.0f),
      (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.f));
 
-    model = glm::translate(model, glm::vec3(0, 0, -2.5f));
+    model = glm::translate(model, glm::vec3(0, 0, -1.5f));
     model = glm::rotate(model, glm::radians(angle), glm::vec3(0, 1, 0));
 
     shader->setUniform("in_Model", model);
