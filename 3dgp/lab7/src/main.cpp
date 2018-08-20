@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     throw std::exception();
   }
 
-  SDL_Window *window = SDL_CreateWindow("Camera",
+  SDL_Window *window = SDL_CreateWindow("Lab 7 - Camera",
     SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
     windowWidth, windowHeight,
     SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
@@ -34,10 +34,11 @@ int main(int argc, char *argv[])
     throw std::exception();
   }
 
+  VertexArray *hallShape = new VertexArray("re_hall_baked.obj");
+  Texture *hallTexture = new Texture("re_hall_diffuse.png");
   VertexArray *shape = new VertexArray("curuthers.obj");
-  ShaderProgram *shader = new ShaderProgram("simple.vert", "simple.frag");
   Texture *texture = new Texture("curuthers_diffuse.png");
-  shader->setUniform("in_Texture", texture);
+  ShaderProgram *shader = new ShaderProgram("simple.vert", "simple.frag");
 
   bool quit = false;
   float angle = 0;
@@ -59,30 +60,29 @@ int main(int argc, char *argv[])
 
     SDL_GetWindowSize(window, &windowWidth, &windowHeight);
     glViewport(0, 0, windowWidth, windowHeight);
-    glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glm::mat4 model(1.0f);
 
-    // Draw with perspective projection matrix
+    /*
+     * Draw with perspective projection matrix
+     */
     shader->setUniform("in_Projection", glm::perspective(glm::radians(45.0f),
      (float)windowWidth / (float)windowHeight, 0.1f, 100.f));
 
-    model = glm::translate(model, glm::vec3(0, 0, -10.0f));
-    model = glm::rotate(model, glm::radians(angle), glm::vec3(0, 1, 0));
-
+    // Draw the mansion
+    glm::mat4 model(1.0f);
+    model = glm::translate(model, glm::vec3(2.0f, -2.0f, -16.0f));
+    model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0, 1, 0));
     shader->setUniform("in_Model", model);
-    shader->draw(shape);
+    shader->setUniform("in_Texture", hallTexture);
+    shader->draw(hallShape);
 
-    // Draw with orthographic projection matrix
+    // Draw the cat
     model = glm::mat4(1.0f);
-
-    shader->setUniform("in_Projection", glm::ortho(0.0f,
-     (float)windowWidth, 0.0f, (float)windowHeight, 0.0f, 1.0f));
-
-    model = glm::translate(model, glm::vec3(100, windowHeight - 100, 0));
-    model = glm::scale(model, glm::vec3(100, 100, 1));
-
+    model = glm::translate(model, glm::vec3(0, -2, -20.0f));
+    model = glm::rotate(model, glm::radians(angle), glm::vec3(0, 1, 0));
     shader->setUniform("in_Model", model);
+    shader->setUniform("in_Texture", texture);
     shader->draw(shape);
 
     angle++;
