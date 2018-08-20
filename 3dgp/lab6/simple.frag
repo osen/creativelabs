@@ -7,7 +7,7 @@ void main()
 {
   vec4 tex = texture(in_Texture, ex_TexCoord);
   vec4 lm = texture(in_Lightmap, ex_TexCoord);
-  lm *= 2.5;
+  lm *= 1;
   vec4 col = tex + lm;
   gl_FragColor = col;
 }
