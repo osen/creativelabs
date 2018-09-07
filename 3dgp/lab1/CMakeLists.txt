@@ -5,7 +5,11 @@ if(MSVC)
   include_directories(
     contrib/msvc-windows-x86/glew/include
     contrib/msvc-windows-x86/SDL2/include
-    contrib/msvc-windows-x86/SDL2_image/include
+  )
+
+  link_directories(
+    ${CMAKE_SOURCE_DIR}/contrib/msvc-windows-x86/SDL2/lib
+    ${CMAKE_SOURCE_DIR}/contrib/msvc-windows-x86/glew/lib
   )
 endif()
 
@@ -13,12 +17,20 @@ add_executable(triangle
   src/main.cpp
 )
 
-target_link_libraries(triangle
-  SDL2 GLU GLEW GL
-)
+if(MSVC)
+  target_link_libraries(triangle
+    SDL2 SDL2main glew32s
+  )
+else()
+  target_link_libraries(triangle
+    SDL2 GLU GLEW GL
+  )
+endif()
 
-#add_custom_command(TARGET triangle POST_BUILD
-#  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#    ${CONTRIB_SHARED_LIBRARIES}
-#    $<TARGET_FILE_DIR:triangle>
-#)
+if(MSVC)
+  add_custom_command(TARGET triangle POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${CMAKE_SOURCE_DIR}/contrib/msvc-windows-x86/SDL2/bin/SDL2.dll"
+      "$<TARGET_FILE_DIR:triangle>"
+  )
+endif()
