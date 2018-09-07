@@ -13,13 +13,17 @@ if(MSVC)
   )
 endif()
 
+if(MSVC)
+  add_definitions(-DSDL_MAIN_HANDLED)
+endif()
+
 add_executable(triangle
   src/main.cpp
 )
 
 if(MSVC)
   target_link_libraries(triangle
-    SDL2 SDL2main glew32s
+    SDL2 glew32 opengl32
   )
 else()
   target_link_libraries(triangle
@@ -31,6 +35,12 @@ if(MSVC)
   add_custom_command(TARGET triangle POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${CMAKE_SOURCE_DIR}/contrib/msvc-windows-x86/SDL2/bin/SDL2.dll"
+      "$<TARGET_FILE_DIR:triangle>"
+  )
+
+  add_custom_command(TARGET triangle POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${CMAKE_SOURCE_DIR}/contrib/msvc-windows-x86/glew/bin/glew32.dll"
       "$<TARGET_FILE_DIR:triangle>"
   )
 endif()
