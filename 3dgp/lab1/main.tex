@@ -13,7 +13,7 @@
 \begin{document}
 
 \title{3D Graphics Programming \\
-  \large Lab 1: Rendering a Triangle}
+  \large Lab 1 and 2: Rendering a Triangle}
 
 \author{Karsten Pedersen\\ Department of Creative Technology}
 \maketitle
@@ -85,7 +85,7 @@ we need to modify the \Command{SDL\_CreateWindow} function call and pass
 
 Next we need to create an \Name{OpenGL} rendering context within
 the created \Name{SDL 2} window and because \Name{Glew} loads the
-\Name{OpenGL} library and extensions at runtime we also need to initialize
+\Name{OpenGL} library and extensions at runtime we also need to initialise
 it. In your project, just after where you open the \Name{SDL 2} window
 using \Command{SDL\_CreateWindow}, add the following function calls.
 
@@ -109,8 +109,8 @@ will fail.
 
 With this in place we are now ready to start with \Name{OpenGL}. What
 we are first going to do to confirm everything is working is change
-the screen to the color red. The following listing will first set the
-current \Name{OpenGL} clear color to red, will then actually instruct
+the screen to the colour red. The following listing will first set the
+current \Name{OpenGL} clear colour to red, will then actually instruct
 \Name{OpenGL} to clear the screen and finally it will atomically swap the
 \Name{OpenGL} memory buffer with that of the screen buffer (to eliminate
 flicker). You will want to place this code where you would usually start
@@ -123,7 +123,7 @@ drawing to the screen in a standard \Name{SDL 2} application.
 \end{Code}
 
 \Note{
-Unlike when using \Name{SDL} where colors usually range between
+Unlike when using \Name{SDL} where colours usually range between
 \Command{0} and \Command{255} (maximum range of an \Command{unsigned
 char}), \Name{OpenGL} instead deals with floating point values and
 so not only is a value between \Command{0} and \Command{1} such as
@@ -136,7 +136,7 @@ point values are also handled very quickly on a maths co-processor
 With that in place, compile the project and run it. You should hopefully
 see a similar output to \Ref{example}.
 
-\Figure{images/example}{A screenshot of our \Name{OpenGL} program simply clearing the screen red}{example}
+\Figure{images/example}{A screen shot of our \Name{OpenGL} program simply clearing the screen red}{example}
 
 Now we can finally begin using the core functionality of \Name{OpenGL}. In
 3D graphics almost everything is made up of triangles so lets start with
@@ -285,7 +285,7 @@ between them that you may want to research if you are interested.
 Shader programs are similar to standard \Name{C/C++} programs in that
 they are made up of multiple objects. These objects consist of different
 shaders such as the \Name{Vertex Shader}, \Name{Fragment Shader},
-\Name{Teselation Shader}, etc. At the very least a program must have
+\Name{Tessellation Shader}, etc. At the very least a program must have
 a \Name{Vertex Shader} and a \Name{Fragment Shader}. The \Name{Vertex
 Shader} deals with the positions of the shape, such as the three points of
 a triangle whereas the \Name{Fragment Shader} deals with the fragments
@@ -351,7 +351,7 @@ get the two confused.
 \end{Code}
 
 Again, the \Name{GLSL} code is very simple and states that for any
-fragment it draws, use the color blue (\Command{0, 0, 1, 1}). Now we
+fragment it draws, use the colour blue (\Command{0, 0, 1, 1}). Now we
 need to link our new shader objects together as part of our complete
 shader program.  We do this by attaching the shader objects and linking
 the program. However, remember when we created our \Name{VAO} we set
@@ -388,7 +388,7 @@ attribute stream matches up.
 \end{Code}
 
 And that is it for the preparation. Congratulations! We can now finally
-perform the drawing operation.  In compartison this is an extremely
+perform the drawing operation.  In comparison this is an extremely
 simple task. We tell \Name{OpenGL} to use our created shader, we tell
 it to use our created triangle data (\Name{VAO}) and finally we tell
 it to draw. Then finally we reset the state back. So just under your
@@ -408,21 +408,21 @@ that shown in \Ref{final}.
   glUseProgram(0);
 \end{Code}
 
-\Figure{images/final}{A screenshot of our \Name{OpenGL} program drawing a single triangle}{final}
+\Figure{images/final}{A screen shot of our \Name{OpenGL} program drawing a single triangle}{final}
 
 \Note{
 The important thing to note is that all of our data is now stored within
 the graphics card by the time it comes to drawing. This means that rather
 than sending across all the data each frame (as is the case with software
 rendered \Name{SDL}), with \Name{OpenGL} we can instead just refer to
-which buffer to draw (via an ID) which minimizes the data sent between
+which buffer to draw (via an ID) which minimises the data sent between
 the CPU and GPU to help achieve maximum performance.
 }
 
 Have a play with the position coordinates that you upload to the
 GPU. You will notice that by default \Name{OpenGL} coordinates
 are between \Command{-1} and \Command{1} in both the x and y axis.
-This is basically the \Name{normalized device coordinates} and by using
+This is basically the \Name{normalised device coordinates} and by using
 a different \Name{Projection} matrix, this will change. We will cover
 this in a future lab.
 
@@ -431,7 +431,7 @@ this in a future lab.
 There was a lot to cover in this lab. You will notice that you now have
 quite a bit of code in your \Command{main.cpp} file.  Spend time looking into different
 ways to manage this code. In particular, think about reusability. You
-might want to try putting seperate parts into different functions
+might want to try putting separate parts into different functions
 or classes.
 
 %\Todo{A note on using OpenCL to do other stuff, collision, physics, AI/ Good at parallel}

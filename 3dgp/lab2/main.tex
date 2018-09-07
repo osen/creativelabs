@@ -13,7 +13,7 @@
 \begin{document}
 
 \title{3D Graphics Programming \\
-  \large Lab 2: Experimenting with Shaders}
+  \large Lab 3: Experimenting with Shaders}
 
 \author{Karsten Pedersen\\ Department of Creative Technology}
 \maketitle
@@ -30,7 +30,7 @@ need a different shader for each one! This is where \Name{Uniforms} come in.
 You can think of a \Name{Uniform} as a variable within the shader that you
 can change from your \Name{C/C++} code.  In order use a \Name{Uniform}
 we need to modify the respective shader object. Since we want to set
-the color via our \Name{Uniform}, we will be editing the \Name{Fragment
+the colour via our \Name{Uniform}, we will be editing the \Name{Fragment
 Shader}.
 
 \begin{Code}
@@ -43,9 +43,9 @@ const GLchar *fragmentShaderSrc =
   "";
 \end{Code}
 
-We add a new \Command{vec4} variable (RGBA) to hold the color and
+We add a new \Command{vec4} variable (RGBA) to hold the colour and
 we label it as \Command{uniform} (in a similar way to how we did the
-triangle position attribute).  We then use the color directly rather
+triangle position attribute).  We then use the colour directly rather
 than the hard coded blue value.  If you try to run the program now you
 will probably see a black triangle. This is because the uniform is at
 the default value of \Command{(0, 0, 0, 0)} (Black). So what we now need to do
@@ -58,7 +58,7 @@ the shader has been linked via \Command{glLinkProgram}, unlike when you
 were binding the attribute location).
 
 \begin{Code}
-// Store location of the color uniform and check if sucessfully found
+// Store location of the color uniform and check if successfully found
 GLint colorUniformId = glGetUniformLocation(programId, "in_Color");
 
 if(colorUniformId == -1)
@@ -76,7 +76,7 @@ error. Only signed integral types are able to hold a negative value
 correctly.
 }
 
-With all this in place, at any point within the program we can change the color
+With all this in place, at any point within the program we can change the colour
 used by the shader. The following code demonstrates this and you should end up with
 output similar to \Ref{final}.
 
@@ -87,7 +87,7 @@ glUniform4f(colorUniformId, 0, 1, 0, 1);
 glUseProgram(0);
 \end{Code}
 
-\Figure{images/final}{A screenshot of our triangle with its color set via a \Name{Uniform}}{final}
+\Figure{images/final}{A screen shot of our triangle with its colour set via a \Name{Uniform}}{final}
 
 \Note{
 Unlike obtaining the uniform location via \Command{glGetUniformLocation},
@@ -97,21 +97,21 @@ you need to bind and unbind the current shader to operate on via
 \Command{glUseProgram}. This state machine driven approach is one of
 the main complaints developers have with \Name{OpenGL} over something
 like i.e \Name{DirectX}. In practice it is just something you have to
-get used to and make sure via diciplined coding you keep resetting the
+get used to and make sure via disciplined coding you keep resetting the
 state back to a known state. Once you have written helper functions or
 even a game engine on top of \Name{OpenGL}, it will become much easier.
 }
 
 \subsection*{Attributes}
 
-If we wanted each point of the triangle to have a different color,
+If we wanted each point of the triangle to have a different colour,
 light value or texture coordinate (such as in \Ref{final_attribute}), a
 \Name{Uniform} would not be viable because that remains constant during
 the drawing of the entire shape rather than per vertex. Instead we use
 the exact same technique as we did for the positions of the triangle in
 the first place using \Name{Attribute streams}.
 
-\Figure{images/final_attribute}{A screenshot of our triangle with its color set via an \Name{Attribute Stream}}{final_attribute}
+\Figure{images/final_attribute}{A screen shot of our triangle with its colour set via an \Name{Attribute Stream}}{final_attribute}
 
 One slight complexity with \Name{Attributes} is that they always need to be passed in to the \Name{Vertex shader}
 and passed through into the \Name{Fragment shader} so that they can be interpolated between the two. For this reason we
@@ -137,7 +137,7 @@ called \Command{in\_Color} that we pass to another variable of type
 \Command{varying} via the simple assignment in the \Command{main}
 function. This is all that is required to pass a variable through from
 the \Name{Vertex shader} to the \Name{Fragment shader}. Next we will simply use this
-value from within the \Name{Fragment shader} as the final output color. The following
+value from within the \Name{Fragment shader} as the final output colour. The following
 listing shows this simple process.
 
 \begin{Code}
@@ -157,7 +157,7 @@ link together.
 }
 
 Next, as we did with out positions \Name{Attribute stream} we define
-the colors of each point of the triangle (red, green, blue).
+the colours of each point of the triangle (red, green, blue).
 
 \begin{Code}
 const GLfloat colors[] = {
@@ -198,21 +198,21 @@ glEnableVertexAttribArray(1)
 
 \Note{
 Take extra notice of the seemingly magic numbers. We use \Command{1}
-rather than \Command{0} because our color buffer is the second position
+rather than \Command{0} because our colour buffer is the second position
 of the \Name{VAO}. We also use \Command{4} instead of \Command{3} because
-our RGBA color buffer is a \Command{vec4} rather than a \Command{vec3}.
+our RGBA colour buffer is a \Command{vec4} rather than a \Command{vec3}.
 }
 
 Before linking your \Name{Shader program}, remember to instruct
 \Name{OpenGL} that you want to connect the \Name{in\_Color}
 \Name{Attribute} variable with the second \Name{Attribute stream}
-(the colors) within the \Name{VAO}.
+(the colours) within the \Name{VAO}.
 
 \begin{Code}
 glBindAttribLocation(programId, 1, "in_Color");
 \end{Code}
 
-You should now have a colorful triangle appearing when you run the
+You should now have a colourful triangle appearing when you run the
 program. If you find that you are getting different results then very
 carefully go through the code and check it. There is a lot of similar
 code here and it is very easy to make a mistake.  We will look at a
