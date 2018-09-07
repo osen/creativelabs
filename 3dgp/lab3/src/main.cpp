@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     throw std::exception();
   }
 
-  SDL_Window *window = SDL_CreateWindow("Triangle",
+  SDL_Window *window = SDL_CreateWindow("Lab 4 - Architecture",
     SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
     WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
