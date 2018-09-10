@@ -1,0 +1,236 @@
+\documentclass[10pt]{article}
+
+\usepackage[a4paper, total={6in, 10in}]{geometry}
+\usepackage{fancyvrb}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{framed}
+\usepackage{environ}
+\usepackage{hyperref}
+\setlength{\parindent}{0pt}
+
+\input{../../common}
+
+\begin{document}
+
+\title{Game Engine Programming \\
+  \large Lab 2: The Component Entity System}
+
+\author{Karsten Pedersen\\ Department of Creative Technology}
+\maketitle
+
+In this lab we are going to be focusing on the core design of our
+engine. This actually means that we wont be touching OpenGL (or DirectX)
+just yet.  Instead we want to look at creating an easy and flexible
+architecture which will stand the test of time and hopefully ensure that
+yourself or anyone using your engine to make an actual game will have
+a pleasant experience. Some factors which detract from this include:
+
+\begin{itemize}
+\item Large amounts of code required for simple tasks
+\item Slow compile times
+\item Inflexbile
+\item Awkward or unclear API
+\item Too easy to make errors
+\end{itemize}
+
+As we go through this series of labs, we will cover a number of ways to
+avoid these problems. First lets look at a number of other engines and see how they work.
+
+Lets say a task we want to achieve is to add a simple cube to the scene at a certain position and rotation. The first example we will use is Unreal Engine 4:
+
+\begin{Code}
+
+// Create actor at specific location
+FActorSpawnParameters si;
+GetWorld()->SpawnActor<AActor>(FVector(), FRotator(0.0f, 45.0f, 0.0f), si);
+
+// Create mesh
+UStaticMeshComponent* mesh =
+  CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cube Mesh"));
+
+// Assign it to the actor
+actor->SetRootComponent(mesh);
+
+\end{Code}
+
+In general, the process is quite straight forward, however some of
+the types are a little awkward to remember and quite long to type
+such as \Name{FActorSpawnParameters}, \Name{UStaticMeshComponent} and
+\Name{CreateDefaultSubobject}. The \Name{U}, \Name{A} and \Name{F}
+prefixes are part of the coding standard which can be a little
+confusing. The requirement of a \Name{FActorSpawnParameters} reference is
+also quite verbose. The \Name{TEXT} MACRO is also easy to forget unless
+you come from a C background.
+
+Now there are a number of technical reasons for this design such as
+avoiding namespaces, unicode and even to avoid \Name{std::string} because
+in the early days, this was still a little bit to young or expensive in
+terms of performance. Some of these issues you might want to find other
+solutions to in your design.
+
+\Note{
+At first glance one of the largest issues you might see with UE4 is
+that it is using \Name{raw pointers} for \Name{C++} classes. This is
+extremely bad coding practice. However, if you did a little deeper,
+you will see that the entire memory management system of UE4 is actually
+based on \Name{Garbage Collection} and \Name{Virtual Memory} providing
+a good amount of safety at the expense of a little bit of performance
+and portability to otehr platforms. Whilst I would not advise using this
+for your engine, you might like to read about this more:
+
+\begin{itemize}
+\item \url{https://wiki.unrealengine.com/index.php?title=Garbage_Collection\_\%26\_Dynamic\_Memory\_Allocation}
+\item \url{http://man7.org/linux/man-pages/man2/mprotect.2.html}
+\item \url{https://msdn.microsoft.com/en-us/library/windows/desktop/aa366898(v=vs.85).aspx}
+\item \url{http://www.hboehm.info/gc/}
+\end{itemize}
+
+}
+
+The second example is Unity. You should see quite a difference here
+because unlike UE4 which has evolved as needed by Epic Games to support
+their requirements internally (whilst trying hard to avoid it becoming
+a sprawling mess!), Unity has been engineered from the ground up to be
+an easy to use prosumer engine. This has lead to a much more straight
+forward API to those less familiar with 3D software evelopment.
+
+\begin{Code}
+
+// Create GameObject and set location
+GameObject go = new GameObject();
+go->GetComponent<Transform>().eulerAngles = new Vector3(0, 45.0f, 0);
+
+// Create a mesh
+Mesh mesh = Resources.Load<Mesh>("CubeMesh");
+
+// Add a mesh renderer
+MeshRenderer mr = go.AddComponent<MeshRenderer>();
+
+// Add a mesh filter and assign our loaded mesh
+MeshFilter mf = go.AddComponent<MeshFilter>();
+mf.mesh = mesh;
+
+\end{Code}
+
+Some of the most immediate areas of interest is the use of public
+variables to set (i.e \Name{eularAngles}). These are likely to be
+using the properties feature of C\# rather than \textit{setters} and
+\textit{getters} which can sometimes lead to more expensive code being
+executed than the developer first assumed. Perhaps the biggest issue to
+note is that a few more lines are needed to achieve the same result as in
+UE4 due to the addition of a \Name{MeshFilter}. You might at first wonder
+why not just assign the \Name{Mesh} directly to the \Name{MeshRenderer}?
+The main reason I suspect they have done this is to further separate
+out the components for better use within their editor. Writing code to
+generate objects in this way is not the most recommended method of doing
+things within the world of Unity, instead dragging and dropping within
+the editor is preferred. This unfortunately leads to quite a bit more
+code required to perform simple tasks.
+
+\
+
+So now it is our turn. Since we don't have the baggage of legacy
+requirements, the complex requirement of fun-to-use tools or scripting
+languages, we can attempt to make our API as simple to use and as
+efficient as possible whilst still retaining a powerful feature set.
+
+\Note{At this point you may want to have a lok at some of the other
+popular engines in use today such as \Name{CryEngine}, \Name{Source
+Engine} and \Name{Godot}.  This kind of research will not only be good
+for your assignment but will also help provide a good showcase of what
+works well and what could potentially become a maintenance nightmare
+at the end.  Perhaps attempt the same example of adding a cube to the
+scene using pure code and try to compare the differences.
+
+}
+
+The following is an example API that you might decide upon. I basically
+came up with this by looking around at other engines whilst playing
+around in a text editor and a UML diagram tool until I found something
+that I wasn't going to get sick of using throughout this unit. So I
+suggest you do the same instead of just copying this code.
+
+\begin{Code}
+
+#include <myengine/myengine.h>
+
+#include <memory>
+
+using namespace myengine;
+
+int main()
+{
+  // Initialize our engine
+  std::shared_ptr<Core> core = Core::initialize();
+
+  // Create a single in-game object
+  std::shared_ptr<Entity> entity = core->addEntity();
+
+  // Add a very simple component to it
+  std::shared_ptr<TestScreen> testScreen = entity->addComponent<TestScreen>();
+
+  // Start the engine's main loop
+  core->start();
+
+  return 0;
+}
+
+\end{Code}
+
+Ignoring the fact that in this example we have also needed to include
+the headers, add a \Name{main} function and started up the engine, you
+will see that there are only two lines needed to add an \Name{Entity}
+and an example \Name{TestScreen} to it.
+
+\
+
+Smart pointers and RAII provides \Name{C++} with fantastic (and quite unique) functionality when dealing with memory, however it is a little bit long winded to type.
+We can address this by using \Name{typedefs} or \Name{MACROS}. The simplest way would be to define in your engine's headers the following:
+
+\begin{Code}
+#include <memory>
+
+#define shared std::shared_ptr
+#define weak std::weak_ptr
+\end{Code}
+
+Now in your code, it would more look something like:
+
+\begin{Code}
+// Create a single in-game object
+shared<Entity> entity = core->addEntity();
+
+// Add a very simple component to it
+weak<TestScreen> testScreen = entity->addComponent<TestScreen>();
+\end{Code}
+
+\Note{
+The \Name{MACRO} or \Name{typedef} approach will be great to see
+in your \textbf{game} to demonstrate the use of the engine but I
+might suggest that it will be easier for me to follow your code
+if in your \textbf{engine} you stick to using the full name, i.e
+\Name{std::shared\_ptr}. Remember, they should end up completely
+interchangable anyway.
+
+}
+
+So now I am going to leave you to it to explore and come up with your own
+engine design you are happy with.  I have added a UML diagram describing
+the approach that I am going to take in \Ref{early}, yours might end up
+being similar but certainly does not have to if you have a good reason
+for it.
+
+\FigureFull{images/uml}{The structure of an early game engine}{early}
+
+A small number of points that you might want to think about:
+
+\begin{itemize}
+
+\item Why do I require \Name{core::addEntity} rather than \Name{new Entity}?
+\item Why do I avoid static classes like \Name{Application, Environment, Keyboard} and instead have \Name{getters} in the \Name{Component} class?
+\item Why do I have multiple \Name{Entity::addComponent} template functions?
+
+\end{itemize}
+
+\end{document}
