@@ -35,9 +35,12 @@ a pleasant experience. Some factors which detract from this include:
 \end{itemize}
 
 As we go through this series of labs, we will cover a number of ways to
-avoid these problems. First lets look at a number of other engines and see how they work.
+avoid these problems. First lets look at a number of other engines and
+see how they work.
 
-Lets say a task we want to achieve is to add a simple cube to the scene at a certain position and rotation. The first example we will use is Unreal Engine 4:
+Lets say a task we want to achieve is to add a simple cube to the scene
+at a certain position and rotation. The first example we will use is
+Unreal Engine 4:
 
 \begin{Code}
 
@@ -65,7 +68,7 @@ you come from a C background.
 
 Now there are a number of technical reasons for this design such as
 avoiding namespaces, unicode and even to avoid \Name{std::string} because
-in the early days, this was still a little bit to young or expensive in
+in the early days, this was still a little bit too young or expensive in
 terms of performance. Some of these issues you might want to find other
 solutions to in your design.
 
@@ -185,8 +188,11 @@ and an example \Name{TestScreen} to it.
 
 \
 
-Smart pointers and RAII provides \Name{C++} with fantastic (and quite unique) functionality when dealing with memory, however it is a little bit long winded to type.
-We can address this by using \Name{typedefs} or \Name{MACROS}. The simplest way would be to define in your engine's headers the following:
+Smart pointers and RAII provides \Name{C++} with fantastic (and quite
+unique) functionality when dealing with memory, however it is a little
+bit long winded to type.  We can address this by using \Name{typedefs}
+or \Name{MACROS}. The simplest way would be to define in your engine's
+headers the following:
 
 \begin{Code}
 #include <memory>

@@ -1,0 +1,440 @@
+\documentclass[10pt]{article}
+
+\usepackage[a4paper, total={6in, 10in}]{geometry}
+\usepackage{fancyvrb}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{framed}
+\usepackage{environ}
+\setlength{\parindent}{0pt}
+
+\input{../../common}
+
+\begin{document}
+
+\title{Game Engine Programming \\
+  \large Lab 3: An OpenGL Refresher}
+
+\author{Karsten Pedersen\\ Department of Creative Technology}
+\maketitle
+
+In this lab we aim to refresh our knowledge of the industry
+standard graphics API OpenGL used to draw and interact with 3D
+objects. \Name{OpenGL} as an API is extremely flexible but also comes
+with quite a bit of complexity.  Developing with \Name{OpenGL} can often
+require some initial time to get used to how it works and also to set
+up the data used for the rendering. However it is also quite easy to
+become rusty if not used in your day to day projects.
+
+\
+
+The first thing we will need to do is to ensure that the project is
+set up and ready to use \Name{OpenGL}. To just get a window appearing
+on the screen we will be using \Name{SDL 2} because not only is the code
+required to do so fairly trivial but also because you are already familiar
+with it.  Other libraries that are also common for this task include
+\Name{[Free]Glut}, \Name{GLFW}, \Name{SFML} and \Name{Allegro}. Open
+the provided \Name{Microsoft Visual Studio} project or generate
+the \Name{CMake} build system.  The code inside \Command{main.cpp}
+should be familiar to you by now. It simply opens up the \Name{SDL 2}
+Window and not much else.  You will see that we are not even creating an
+\Command{SDL\_Renderer} because we are going to be using \Name{OpenGL}
+directly rather than using the basic renderer provided by \Name{SDL 2}
+(which uses either \Name{OpenGL} or \Name{DirectX} underneath depending
+on platform).
+
+\Note{
+\Name{Microsoft Windows} provides a version of \Name{OpenGL} which
+is extremely old (version \textbf{1.2}) and is too inflexible to make
+what we see today as modern games. Luckily a much newer implementation
+of \Name{OpenGL} is provided by the graphics card manufacturer's driver
+(i.e \Name{NVIDIA}, \Name{AMD}, \Name{Intel}, \Name{MESA}). As of writing
+we are at around version \textbf{4.6} which only the very latest hardware
+supports.  However the techniques and functionality covered in these labs
+was actually provided by version \textbf{2.1} which means that your code
+will work on almost all hardware found in the wild, even on mobile
+devices such as \Name{Android} and \Name{iOS} via \Name{OpenGL ES}.
+
+\
+
+For convenience, rather than use a specific header and library
+(i.e \Command{GL/gl.h}) from each different vendor's SDK, we
+instead use a 3rd party library called \Name{Glew} (Open\textbf{GL}
+\textbf{E}xtension \textbf{W}rangler). This library links the vendor's
+specific implementation with the platforms implementation at runtime so
+we can just use \Name{OpenGL} as usual and not worry about the details.
+
+}
+
+First, lets begin by including the \Name{Glew} header file into our
+project so we can start using \Name{OpenGL} functions.
+
+\begin{Code}
+  #include <GL/glew.h>
+\end{Code}
+
+We now need to instruct \Name{SDL 2} to create a window that is
+suitable for creating an \Name{OpenGL} rendering context. To do this
+we need to modify the \Command{SDL\_CreateWindow} function call and pass
+\Command{SDL\_WINDOW\_OPENGL} as a parameter.
+
+\begin{Code}
+  SDL_Window *window = SDL_CreateWindow("Triangle",
+    SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+    WINDOW_WIDTH, WINDOW_HEIGHT,
+    SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+\end{Code}
+
+Next we need to create an \Name{OpenGL} rendering context within
+the created \Name{SDL 2} window and because \Name{Glew} loads the
+\Name{OpenGL} library and extensions at runtime we also need to initialise
+it. In your project, just after where you open the \Name{SDL 2} window
+using \Command{SDL\_CreateWindow}, add the following function calls.
+
+\begin{Code}
+  if(!SDL_GL_CreateContext(window))
+  {
+    throw std::exception();
+  }
+
+  if(glewInit() != GLEW_OK)
+  {
+    throw std::exception();
+  }
+\end{Code}
+
+\Note{
+This must be \textbf{after} the call to open the window because otherwise
+there is no window for \Name{OpenGL} to bind a context to and the call
+will fail.
+}
+
+With this in place we are now ready to start with \Name{OpenGL}. What
+we are first going to do to confirm everything is working is change
+the screen to the colour red. The following listing will first set the
+current \Name{OpenGL} clear colour to red, will then actually instruct
+\Name{OpenGL} to clear the screen and finally it will atomically swap the
+\Name{OpenGL} memory buffer with that of the screen buffer (to eliminate
+flicker). You will want to place this code where you would usually start
+drawing to the screen in a standard \Name{SDL 2} application.
+
+\begin{Code}
+  glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
+  SDL_GL_SwapWindow(window);
+\end{Code}
+
+\Note{
+Unlike when using \Name{SDL} where colours usually range between
+\Command{0} and \Command{255} (maximum range of an \Command{unsigned
+char}), \Name{OpenGL} instead deals with floating point values and
+so not only is a value between \Command{0} and \Command{1} such as
+\Command{0.332} possible, it also simplifies many calculations. Floating
+point values are also handled very quickly on a maths co-processor
+(which is essentially exactly what a graphics card is).
+
+}
+
+With that in place, compile the project and run it. You should hopefully
+see a similar output to \Ref{example}.
+
+\Figure{images/example}{A screen shot of our \Name{OpenGL} program simply clearing the screen red}{example}
+
+Now we can finally begin using the core functionality of \Name{OpenGL}. In
+3D graphics almost everything is made up of triangles so lets start with
+trying to draw one. There is quite a lot of initial work that needs to be
+done before we can actually view an image on the screen. \Ref{process}
+should give you an overview of the tasks required to do this. This same
+code can be reused however so after the initial hurdle, you may find it
+surprisingly easy to extend.
+
+\Figure{images/process}{Diagram showing the series of tasks in order to render a triangle}{process}
+
+\subsection*{Preparing the Primitive Shape Data}
+We will start with preparing the primitive shape. To do this we need a
+list of points that describe our shape (in our case our single triangle).
+We will use 3D points (include z component) because we aim to get into
+drawing 3D objects. For 2D components such as GUI, you will likely not
+include the z component to save memory on the GPU.
+
+\begin{Code}
+  const GLfloat positions[] = {
+    0.0f, 0.5f, 0.0f,
+    -0.5f, -0.5f, 0.0f,
+    0.5f, -0.5f, 0.0f
+  };
+\end{Code}
+
+\Note{
+Don't get too hung up on the \Name{OpenGL} types. For example
+\Command{GLfloat} is just a typedef. On almost all platforms it will be a
+typedef of the standard \Command{float}. The only reason for \Name{OpenGL}
+to do this is because it is designed to work on an extremely large
+range of platforms unlike i.e \Name{Microsoft DirectX}. For this
+reason it cannot guarantee or make the assumption that the platform will provide certain
+functionality. In this case it would typedef to the next best thing
+(such as a \Command{double}).
+
+}
+
+When we run the program, this data is in our RAM (or stack). We
+want to upload it to the GPU. The following listing will create a new
+\Name{Vertex Buffer Object} to store data in, bind it so that it is the
+active \Name{VBO} for operations, upload the data to the currently bound
+\Name{VBO} and finally unbind the buffer again to return the state back
+to normal.
+
+\begin{Code}
+  GLuint positionsVboId = 0;
+
+  // Create a new VBO on the GPU and bind it
+  glGenBuffers(1, &positionsVboId);
+
+  if(!positionsVboId)
+  {
+    throw std::exception();
+  }
+
+  glBindBuffer(GL_ARRAY_BUFFER, positionsVboId);
+
+  // Upload a copy of the data from memory into the new VBO
+  glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
+
+  // Reset the state
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+\end{Code}
+
+\Note{
+The \Command{GLuint} is again, basically just a typedef of an
+\Command{unsigned int}. The reason why we do not have a pointer is because
+pointers can only point to memory in RAM or on the stack. The actual
+memory we are referring to is on the GPU so instead the best we can do
+is use an integer ID and copy over the raw memory containing the data
+for the points. This is also what makes systems programming languages
+(such as \Name{C}, \Name{C++} and \Name{Rust}) so crucial for games and
+embedded programming because non-native things such as \Name{Microsoft
+C\#/VB.NET} and \Name{Java} use garbage collectors (which cannot function on
+the GPU) and dealing with raw memory in these languages is inefficient
+or impossible (instead they have to call into \Name{C} anyway).
+
+}
+
+Now we need to create the \Name{Vertex Array Object (VAO)}. At the
+moment you might be wondering why this is needed because the data is
+already on the GPU.  In older implementations of \Name{OpenGL} it was
+not needed and depending on your drivers it might work without. However
+when you start needing to include texture coordinates, vertex normals,
+lightmap coordinates, it will start to make more sense why it is now
+a required step. \Ref{vao} may help explain the interactions between
+these concepts. The following listing will create the \Name{VAO}, bind
+it, bind the \Name{VBO} and assign our \Name{VBO} containing the vertex
+positions to be our first entry (position \Command{0}). The position
+\Command{0} will then be flagged as \Name{enabled} so that it will be
+streamed into the shader as an attribute stream later on (This step
+is required to prevent unused streams from passing garbage data into
+the shader).  Finally we unbind the \Name{VBO} and unbind the \Name{VAO}
+to reset to the default state.
+
+\begin{Code}
+  GLuint vaoId = 0;
+
+  // Create a new VAO on the GPU and bind it
+  glGenVertexArrays(1, &vaoId);
+
+  if(!vaoId)
+  {
+    throw std::exception();
+  }
+
+  glBindVertexArray(vaoId);
+
+  // Bind the position VBO, assign it to position 0 on the bound VAO
+  // and flag it to be used
+  glBindBuffer(GL_ARRAY_BUFFER, positionsVboId);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+    3 * sizeof(GLfloat), (void *)0);
+
+  glEnableVertexAttribArray(0);
+
+  // Reset the state
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindVertexArray(0);
+\end{Code}
+
+\FigureFull{images/vao}{Diagram showing the relationship between VBOs, VAOs and shader programs}{vao}
+
+\subsection*{Preparing the Shader Program}
+We now have the data that we want to draw uploaded, however the GPU does
+not yet know how we want it to be drawn. What we need to do is write
+a very small program to upload to the GPU that uses the data to do the
+drawing. This small program is known as the shader program.
+
+Shader programs are written using \Name{GL Shader Language}
+(\Name{GLSL}). The \Name{Microsoft DirectX} equivalent is \Name{High Level
+Shader Language} (\Name{HLSL}) for example.  The syntax of \Name{GLSL}
+is very similar to \Name{C/C++} but has many built in types and functions
+which are useful for graphics programming such as \Command{vec4} and
+\Command{pow}. As with \Name{OpenGL} itself, there are many different
+versions of \Name{GLSL}. We will be using \Command{1.2} which is fairly
+old. Again we will be doing this to reach maximum compatibility with
+different hardware and drivers. The very latest at the time of writing
+is \Command{4.6 core} and there are a small number of differences
+between them that you may want to research if you are interested.
+
+\
+
+Shader programs are similar to standard \Name{C/C++} programs in that
+they are made up of multiple objects. These objects consist of different
+shaders such as the \Name{Vertex Shader}, \Name{Fragment Shader},
+\Name{Tessellation Shader}, etc. At the very least a program must have
+a \Name{Vertex Shader} and a \Name{Fragment Shader}. The \Name{Vertex
+Shader} deals with the positions of the shape, such as the three points of
+a triangle whereas the \Name{Fragment Shader} deals with the fragments
+within a shape, so drawing all the pixels that reside within the
+area a triangle.  We will begin creating our shader program
+by first writing and compiling a simple \Name{Vertex Shader}.
+
+\begin{Code}
+  const GLchar *vertexShaderSrc =
+    "attribute vec3 in_Position;             " \
+    "                                        " \
+    "void main()                             " \
+    "{                                       " \
+    "  gl_Position = vec4(in_Position, 1.0); " \
+    "}                                       ";
+
+  // Create a new vertex shader, attach source code, compile it and
+  // check for errors.
+  GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(vertexShaderId, 1, &vertexShaderSrc, NULL);
+  glCompileShader(vertexShaderId);
+  GLint success = 0;
+  glGetShaderiv(vertexShaderId, GL_COMPILE_STATUS, &success);
+
+  if(!success)
+  {
+    throw std::exception();
+  }
+\end{Code}
+
+This \Name{GLSL} is the simplest example of a working \Name{Vertex
+Shader}. Notice the variable-like declaration at the top of the
+\Name{GLSL} called \Command{in\_Position}? This is what allows us to
+read the stream of data from the \Name{VBO} that we prepared earlier. The
+\Name{GLSL} code currently states that it should use the \Command{vec3}
+that it receives directly by assigning it to the final output vertex
+position (\Command{gl\_Position}).  An awkward part here is that
+the \Name{GLSL} is embedded into the \Name{C/C++} code as a string.
+This makes multi-line entry a bit awkward. A more scalable solution
+is either using some \Command{MACRO} trickery or simply loading the
+shader from a file.  With that working, the next step is for the
+\Name{Fragment Shader}. The code is very similar so make sure not to
+get the two confused.
+
+\begin{Code}
+  const GLchar *fragmentShaderSrc =
+    "void main()                        " \
+    "{                                  " \
+    "  gl_FragColor = vec4(0, 0, 1, 1); " \
+    "}                                  ";
+
+  // Create a new fragment shader, attach source code, compile it and
+  // check for errors.
+  GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(fragmentShaderId, 1, &fragmentShaderSrc, NULL);
+  glCompileShader(fragmentShaderId);
+  glGetShaderiv(fragmentShaderId, GL_COMPILE_STATUS, &success);
+
+  if(!success)
+  {
+    throw std::exception();
+  }
+\end{Code}
+
+Again, the \Name{GLSL} code is very simple and states that for any
+fragment it draws, use the colour blue (\Command{0, 0, 1, 1}). Now we
+need to link our new shader objects together as part of our complete
+shader program.  We do this by attaching the shader objects and linking
+the program. However, remember when we created our \Name{VAO} we set
+the positions \Name{VBO} to position \Command{0} (the first and only
+location)? We need to instruct the shader whilst linking to put our
+input variable \Command{in\_Position} at that position too so the correct
+attribute stream matches up.
+
+\begin{Code}
+  // Create new shader program and attach our shader objects
+  GLuint programId = glCreateProgram();
+  glAttachShader(programId, vertexShaderId);
+  glAttachShader(programId, fragmentShaderId);
+
+  // Ensure the VAO "position" attribute stream gets set as the first position
+  // during the link.
+  glBindAttribLocation(programId, 0, "in_Position");
+
+  // Perform the link and check for failure
+  glLinkProgram(programId);
+  glGetProgramiv(programId, GL_LINK_STATUS, &success);
+
+  if(!success)
+  {
+    throw std::exception();
+  }
+
+  // Detach and destroy the shader objects. These are no longer needed
+  // because we now have a complete shader program.
+  glDetachShader(programId, vertexShaderId);
+  glDeleteShader(vertexShaderId);
+  glDetachShader(programId, fragmentShaderId);
+  glDeleteShader(fragmentShaderId);
+\end{Code}
+
+And that is it for the preparation. Congratulations! We can now finally
+perform the drawing operation.  In comparison this is an extremely
+simple task. We tell \Name{OpenGL} to use our created shader, we tell
+it to use our created triangle data (\Name{VAO}) and finally we tell
+it to draw. Then finally we reset the state back. So just under your
+\Command{glClear} line add the following to receive a result similar to
+that shown in \Ref{final}.
+
+\begin{Code}
+  // Instruct OpenGL to use our shader program and our VAO
+  glUseProgram(programId);
+  glBindVertexArray(vaoId);
+
+  // Draw 3 vertices (a triangle)
+  glDrawArrays(GL_TRIANGLES, 0, 3);
+
+  // Reset the state
+  glBindVertexArray(0);
+  glUseProgram(0);
+\end{Code}
+
+\Figure{images/final}{A screen shot of our \Name{OpenGL} program drawing a single triangle}{final}
+
+\Note{
+The important thing to note is that all of our data is now stored within
+the graphics card by the time it comes to drawing. This means that rather
+than sending across all the data each frame (as is the case with software
+rendered \Name{SDL}), with \Name{OpenGL} we can instead just refer to
+which buffer to draw (via an ID) which minimises the data sent between
+the CPU and GPU to help achieve maximum performance.
+}
+
+Have a play with the position coordinates that you upload to the
+GPU. You will notice that by default \Name{OpenGL} coordinates
+are between \Command{-1} and \Command{1} in both the x and y axis.
+This is basically the \Name{normalised device coordinates} and by using
+a different \Name{Projection} matrix, this will change. We will cover
+this in a future lab.
+
+\
+
+There was a lot to cover in this lab. You will notice that you now
+have quite a bit of code in your \Command{main.cpp} file. Much of the
+remaining Game Engine Programming unit will be looking into the ways to
+integrate OpenGL into games in a flexible and scalable way.
+
+%\Todo{A note on using OpenCL to do other stuff, collision, physics, AI/ Good at parallel}
+
+\end{document}

@@ -132,6 +132,15 @@ const GLchar *vertexShaderSrc =
   "";
 \end{Code}
 
+\Note{
+Remember that now we have modified the shader code and removed the
+uniform variable (because we are going to use an attribute stream
+instead), your bit of code that looks for the uniform variable via
+\Name{glGetUniformLocation} will now return as an error. Since we no
+longer need it, you must delete that too.
+
+}
+
 Here you will see that we have an additional \Name{Attribute}
 called \Command{in\_Color} that we pass to another variable of type
 \Command{varying} via the simple assignment in the \Command{main}
@@ -193,7 +202,7 @@ glBindBuffer(GL_ARRAY_BUFFER, colorsVboId);
 glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE,
   4 * sizeof(GLfloat), (void *)0);
 
-glEnableVertexAttribArray(1)
+glEnableVertexAttribArray(1);
 \end{Code}
 
 \Note{
