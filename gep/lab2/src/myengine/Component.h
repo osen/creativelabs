@@ -14,6 +14,7 @@ class Component
   friend class Entity;
 
 public:
+  virtual ~Component();
   std::shared_ptr<Core> getCore();
   std::shared_ptr<Entity> getEntity();
 

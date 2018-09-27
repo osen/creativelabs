@@ -4,6 +4,7 @@
 namespace myengine
 {
 
+Component::~Component() { }
 void Component::onInit() { }
 void Component::onBegin() { }
 void Component::onTick() { }
