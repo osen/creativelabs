@@ -11,6 +11,16 @@ if(MSVC)
     contrib/msvc-windows-x86/SDL2/include
     contrib/msvc-windows-x86/SDL2_image/include
   )
+else()
+  include_directories(
+    /usr/local/include
+    /usr/X11R6/include
+  )
+
+  link_directories(
+    /usr/local/lib
+    /usr/X11R6/lib
+  )
 endif()
 
 add_executable(model
