@@ -48,6 +48,12 @@ ShaderProgram::ShaderProgram(std::string vert, std::string frag)
 
   if(!success)
   {
+    GLint maxLength = 0;
+    glGetShaderiv(vertexShaderId, GL_INFO_LOG_LENGTH, &maxLength);
+    std::vector<GLchar> errorLog(maxLength);
+    glGetShaderInfoLog(vertexShaderId, maxLength, &maxLength, &errorLog[0]);
+
+    std::cout << &errorLog.at(0) << std::endl;
     throw std::exception();
   }
 
@@ -59,6 +65,13 @@ ShaderProgram::ShaderProgram(std::string vert, std::string frag)
 
   if(!success)
   {
+    GLint maxLength = 0;
+    glGetShaderiv(vertexShaderId, GL_INFO_LOG_LENGTH, &maxLength);
+    std::vector<GLchar> errorLog(maxLength);
+    glGetShaderInfoLog(vertexShaderId, maxLength, &maxLength, &errorLog[0]);
+
+    std::cout << &errorLog.at(0) << std::endl;
+
     throw std::exception();
   }
 
@@ -67,6 +80,7 @@ ShaderProgram::ShaderProgram(std::string vert, std::string frag)
   glAttachShader(id, fragmentShaderId);
   glBindAttribLocation(id, 0, "in_Position");
   glBindAttribLocation(id, 1, "in_Color");
+  glBindAttribLocation(id, 2, "in_TexCoord");
 
   if(glGetError() != GL_NO_ERROR)
   {
@@ -109,6 +123,20 @@ void ShaderProgram::setUniform(std::string uniform, glm::vec4 value)
 
   glUseProgram(id);
   glUniform4f(uniformId, value.x, value.y, value.z, value.w);
+  glUseProgram(0);
+}
+
+void ShaderProgram::setUniform(std::string uniform, int value)
+{
+  GLint uniformId = glGetUniformLocation(id, uniform.c_str());
+
+  if(uniformId == -1)
+  {
+    throw std::exception();
+  }
+
+  glUseProgram(id);
+  glUniform1i(uniformId, value);
   glUseProgram(0);
 }
 

@@ -18,6 +18,7 @@ add_executable(textures
   src/VertexBuffer.cpp
   src/VertexArray.cpp
   src/ShaderProgram.cpp
+  contrib/stb_image/stb_image.cpp
 )
 
 target_link_libraries(textures

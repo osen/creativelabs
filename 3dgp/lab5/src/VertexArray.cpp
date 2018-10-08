@@ -23,6 +23,10 @@ void VertexArray::setBuffer(std::string attribute, VertexBuffer *buffer)
   {
     buffers.at(1) = buffer;
   }
+  else if(attribute == "in_TexCoord")
+  {
+    buffers.at(2) = buffer;
+  }
   else
   {
     throw std::exception();

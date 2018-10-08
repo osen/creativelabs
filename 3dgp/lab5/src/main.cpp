@@ -2,6 +2,7 @@
 #include "VertexArray.h"
 #include "ShaderProgram.h"
 
+#include <stb_image/stb_image.h>
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 #include <glm/ext.hpp>
@@ -38,16 +39,50 @@ int main(int argc, char *argv[])
   positions->add(glm::vec3(-0.5f, -0.5f, 0.0f));
   positions->add(glm::vec3(0.5f, -0.5f, 0.0f));
 
-  VertexBuffer *colors = new VertexBuffer();
-  colors->add(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-  colors->add(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-  colors->add(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+  VertexBuffer *texCoords = new VertexBuffer();
+  texCoords->add(glm::vec2(0.5f, 0.0f));
+  texCoords->add(glm::vec2(0.0f, 1.0f));
+  texCoords->add(glm::vec2(1.0f, 1.0f));
 
   VertexArray *shape = new VertexArray();
   shape->setBuffer("in_Position", positions);
-  shape->setBuffer("in_Color", colors);
+  shape->setBuffer("in_TexCoord", texCoords);
 
   ShaderProgram *shader = new ShaderProgram("simple.vert", "simple.frag");
+
+  //////////////////////
+
+  int w = 0;
+  int h = 0;
+  int channels = 0;
+
+  unsigned char *data = stbi_load("texture.png", &w, &h, &channels, 4);
+
+  if(!data)
+  {
+    throw std::exception();
+  }
+
+  GLuint textureId = 0;
+  glGenTextures(1, &textureId);
+
+  if(!textureId)
+  {
+    throw std::exception();
+  }
+
+  glBindTexture(GL_TEXTURE_2D, textureId);
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+  free(data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  glActiveTexture(GL_TEXTURE0 + 1);
+  glBindTexture(GL_TEXTURE_2D, textureId);
+
+  //////////////////////
 
   bool quit = false;
   float angle = 0;
@@ -68,7 +103,6 @@ int main(int argc, char *argv[])
 
     glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    shader->setUniform("in_Lightness", 0.5f);
     glm::mat4 model(1.0f);
 
     // Draw with perspective projection matrix
@@ -78,6 +112,7 @@ int main(int argc, char *argv[])
     model = glm::translate(model, glm::vec3(0, 0, -2.5f));
     model = glm::rotate(model, glm::radians(angle), glm::vec3(0, 1, 0));
 
+    shader->setUniform("in_Texture", 1);
     shader->setUniform("in_Model", model);
     shader->draw(shape);
 
