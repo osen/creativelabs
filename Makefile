@@ -8,6 +8,9 @@ all:
 	cd gep/lab3b && pdflatex main.tex
 	mv gep/lab3b/main.pdf gep/lab3b/gep-lab3b-opengl.pdf
 
+	cd gep/lab4 && pdflatex main.tex
+	mv gep/lab4/main.pdf gep/lab4/gep-lab5-resources.pdf
+
 	cd 3dgp/lab1 && pdflatex main.tex
 	mv 3dgp/lab1/main.pdf 3dgp/lab1/3dgp-lab1-2-triangle.pdf
 
