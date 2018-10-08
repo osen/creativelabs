@@ -20,6 +20,22 @@ class Entity
 
 public:
   template <typename T>
+  std::shared_ptr<T> getComponent()
+  {
+    for(size_t i = 0; i < components.size(); i++)
+    {
+      std::shared_ptr<T> tst = std::dynamic_pointer_cast<T>(components.at(i));
+
+      if(tst)
+      {
+        return tst;
+      }
+    }
+
+    throw std::exception();
+  }
+
+  template <typename T>
   std::shared_ptr<T> addComponent()
   {
     ADDCOMPONENT

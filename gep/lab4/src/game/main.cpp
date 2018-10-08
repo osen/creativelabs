@@ -19,6 +19,11 @@ public:
   {
     //std::cout << "onTick" << std::endl;
   }
+
+  void onDisplay()
+  {
+    //std::cout << "onTick" << std::endl;
+  }
 };
 
 int main()
@@ -29,6 +34,7 @@ int main()
 
   std::shared_ptr<TestScreen> ts = e->addComponent<TestScreen>("Green");
   std::shared_ptr<myengine::MeshRenderer> mr = e->addComponent<myengine::MeshRenderer>();
+  std::shared_ptr<myengine::MeshRenderer> mr2 = e->getComponent<myengine::MeshRenderer>();
 
   c->start();
 

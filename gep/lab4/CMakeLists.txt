@@ -3,6 +3,7 @@ project(MYENGINE)
 
 include_directories(
   src
+  contrib
 )
 
 if(MSVC)
