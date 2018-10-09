@@ -19,3 +19,6 @@ all:
 
 	cd 3dgp/lab3 && pdflatex main.tex
 	mv 3dgp/lab3/main.pdf 3dgp/lab3/3dgp-lab4-architecture.pdf
+
+	cd 3dgp/lab4 && pdflatex main.tex
+	mv 3dgp/lab4/main.pdf 3dgp/lab4/3dgp-lab5-matrix.pdf
