@@ -64,6 +64,9 @@ create our model matrix and assign it to \Name{in\_Model}. Finally we draw the s
 
 \begin{Code}
 
+// Do not place this in the loop or it will reset to zero each iteration
+float angle = 0;
+
 // Draw with perspective projection matrix
 shader->setUniform("in_Projection", glm::perspective(glm::radians(45.0f),
  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.f));
@@ -74,6 +77,8 @@ model = glm::rotate(model, glm::radians(angle), glm::vec3(0, 1, 0));
 
 shader->setUniform("in_Model", model);
 shader->draw(shape);
+
+angle += 0.1f;
 
 \end{Code}
 
