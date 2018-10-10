@@ -39,7 +39,7 @@ uniform mat4 in_Model;
 
 \end{Code}
 
-We now multiply the Name{in\_Position} by the new model matrix and projection
+We now multiply the \Name{in\_Position} by the new model matrix and projection
 matrix.  This transforms the vertex coordinates into world space and
 then into screen space respectively.
 
@@ -59,13 +59,14 @@ void main()
 \end{Code}
 
 Now in the C++ we need to generate our perspective projection matrix
-and assign it to the Name{in\_Projection} variable.  Likewise we also need to
+and assign it to the \Name{in\_Projection} variable.  Likewise we also need to
 create our model matrix and assign it to \Name{in\_Model}. Finally we draw the shape.
 
 \begin{Code}
 
-// Do not place this in the loop or it will reset to zero each iteration
 float angle = 0;
+
+// Inside the main loop
 
 // Draw with perspective projection matrix
 shader->setUniform("in_Projection", glm::perspective(glm::radians(45.0f),
