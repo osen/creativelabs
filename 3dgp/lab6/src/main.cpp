@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     throw std::exception();
   }
 
-  SDL_Window *window = SDL_CreateWindow("Triangle",
+  SDL_Window *window = SDL_CreateWindow("Multitexturing",
     SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
     WINDOW_WIDTH, WINDOW_HEIGHT,
     SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
@@ -62,9 +62,7 @@ int main(int argc, char *argv[])
 
   bool quit = false;
   float angle = 0;
-  bool multiTex = true;
-
-  //glEnable(GL_CULL_FACE);
+  int multiTex = 0;
 
   while(!quit)
   {
@@ -79,15 +77,7 @@ int main(int argc, char *argv[])
       else if(event.type == SDL_KEYDOWN)
       {
         multiTex = !multiTex;
-
-        if(multiTex)
-        {
-          shader->setUniform("in_Lightmap", lightmap);
-        }
-        else
-        {
-          shader->setUniform("in_Lightmap", (Texture *)NULL);
-        }
+        shader->setUniform("in_EnableMultiTex", multiTex);
       }
     }
 

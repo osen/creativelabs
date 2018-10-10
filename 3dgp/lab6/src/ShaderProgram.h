@@ -23,6 +23,7 @@ public:
   void draw(VertexArray *vertexArray);
   void setUniform(std::string uniform, glm::vec4 value);
   void setUniform(std::string uniform, float value);
+  void setUniform(std::string uniform, int value);
   void setUniform(std::string uniform, glm::mat4 value);
   void setUniform(std::string uniform, Texture *texture);
   GLuint getId();
