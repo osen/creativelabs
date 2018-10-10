@@ -11,6 +11,15 @@ if(MSVC)
     contrib/msvc-windows-x86/SDL2/include
     contrib/msvc-windows-x86/SDL2_image/include
   )
+else()
+  include_directories(
+    /usr/X11R6/include
+    /usr/local/include
+  )
+  link_directories(
+    /usr/X11R6/lib
+    /usr/local/lib
+  )
 endif()
 
 add_executable(camera
