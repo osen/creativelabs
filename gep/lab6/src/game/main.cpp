@@ -32,6 +32,9 @@ int main()
 
   std::shared_ptr<myengine::Entity> e = c->addEntity();
 
+  std::shared_ptr<myengine::Sound> s = std::make_shared<myengine::Sound>("dixie_horn.ogg");
+  s->play();
+
   std::shared_ptr<TestScreen> ts = e->addComponent<TestScreen>("Green");
   std::shared_ptr<myengine::MeshRenderer> mr = e->addComponent<myengine::MeshRenderer>();
   std::shared_ptr<myengine::MeshRenderer> mr2 = e->getComponent<myengine::MeshRenderer>();

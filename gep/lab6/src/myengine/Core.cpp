@@ -35,6 +35,33 @@ std::shared_ptr<Core> Core::initialize()
     throw std::exception();
   }
 
+  rtn->device = alcOpenDevice(NULL);
+
+  if(!rtn->device)
+  {
+    throw std::exception();
+  }
+
+  rtn->context = alcCreateContext(rtn->device, NULL);
+
+  if(!rtn->context)
+  {
+    alcCloseDevice(rtn->device);
+    throw std::exception();
+  }
+
+  if(!alcMakeContextCurrent(rtn->context))
+  {
+    alcDestroyContext(rtn->context);
+    alcCloseDevice(rtn->device);
+    throw std::exception();
+  }
+
+  // Remember to close after use
+  //alcMakeContextCurrent(NULL);
+  //alcDestroyContext(context);
+  //alcCloseDevice(device);
+
   return rtn;
 }
 
