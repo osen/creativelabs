@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     throw std::exception();
   }
 
-  SDL_Window *window = SDL_CreateWindow("Lab 1 & 2 - Triangle",
+  SDL_Window *window = SDL_CreateWindow("Lab 3 - Triangle",
     SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
     WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE);
 

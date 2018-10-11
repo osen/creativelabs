@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
     shader->setUniform("in_Model", model);
     shader->draw(shape);
 
-    angle++;
+    angle+=0.1f;
 
     SDL_GL_SwapWindow(window);
   }

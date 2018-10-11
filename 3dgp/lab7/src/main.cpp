@@ -69,8 +69,13 @@ int main(int argc, char *argv[])
     shader->setUniform("in_Projection", glm::perspective(glm::radians(45.0f),
      (float)windowWidth / (float)windowHeight, 0.1f, 100.f));
 
-    // Draw the mansion
+    // Create a "camera"
     glm::mat4 model(1.0f);
+    model = glm::rotate(model, glm::radians(angle), glm::vec3(0, 1, 0));
+    shader->setUniform("in_View", glm::inverse(model));
+
+    // Draw the mansion
+    model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(2.0f, -2.0f, -16.0f));
     model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0, 1, 0));
     shader->setUniform("in_Model", model);
@@ -79,13 +84,13 @@ int main(int argc, char *argv[])
 
     // Draw the cat
     model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0, -2, -20.0f));
+    model = glm::translate(model, glm::vec3(0, -2.1f, -20.0f));
     model = glm::rotate(model, glm::radians(angle), glm::vec3(0, 1, 0));
     shader->setUniform("in_Model", model);
     shader->setUniform("in_Texture", texture);
     shader->draw(shape);
 
-    angle++;
+    angle+=0.01f;
 
     SDL_GL_SwapWindow(window);
   }

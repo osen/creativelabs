@@ -1,6 +1,7 @@
 #include <myengine/myengine.h>
 
 #include <iostream>
+#include <string>
 
 class TestScreen : public myengine::Component
 {

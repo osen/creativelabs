@@ -10,10 +10,18 @@ if(MSVC)
     contrib/msvc-windows-x86/glew/include
     contrib/msvc-windows-x86/SDL2/include
   )
-
   link_directories(
     ${CMAKE_SOURCE_DIR}/contrib/msvc-windows-x86/SDL2/lib
     ${CMAKE_SOURCE_DIR}/contrib/msvc-windows-x86/glew/lib
+  )
+else()
+  include_directories(
+    /usr/X11R6/include
+    /usr/local/include
+  )
+  link_directories(
+    /usr/X11R6/lib
+    /usr/local/lib
   )
 endif()
 
