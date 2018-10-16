@@ -25,3 +25,6 @@ all:
 
 	cd 3dgp/lab5 && pdflatex main.tex
 	mv 3dgp/lab5/main.pdf 3dgp/lab5/3dgp-lab6-textures.pdf
+
+	cd 3dgp/lab7 && pdflatex main.tex
+	mv 3dgp/lab7/main.pdf 3dgp/lab7/3dgp-lab7-movement.pdf
