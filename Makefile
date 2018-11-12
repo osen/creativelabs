@@ -14,6 +14,9 @@ all:
 	cd gep/lab9 && pdflatex main.tex
 	mv gep/lab9/main.pdf gep/lab9/gep-lab9-documentation.pdf
 
+	cd gep/lab10 && pdflatex main.tex
+	mv gep/lab10/main.pdf gep/lab10/gep-lab10-multicam.pdf
+
 	cd 3dgp/lab1 && pdflatex main.tex
 	mv 3dgp/lab1/main.pdf 3dgp/lab1/3dgp-lab1-2-triangle.pdf
 
