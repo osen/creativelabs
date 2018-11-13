@@ -34,3 +34,6 @@ all:
 
 	cd 3dgp/lab7 && pdflatex main.tex
 	mv 3dgp/lab7/main.pdf 3dgp/lab7/3dgp-lab7-movement.pdf
+
+	cd 3dgp/lab8 && pdflatex main.tex
+	mv 3dgp/lab8/main.pdf 3dgp/lab8/3dgp-lab8-lighting.pdf
