@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 
     // Draw the cat
     model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0, 0, -20.0f));
+    model = glm::translate(model, glm::vec3(0, 0, -10.0f));
     model = glm::rotate(model, glm::radians(angle), glm::vec3(0, 1, 0));
     shader->setUniform("in_Model", model);
     shader->setUniform("in_Texture", texture);

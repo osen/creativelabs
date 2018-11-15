@@ -39,7 +39,7 @@ In your fragment shader, you simply multiply the output texture pixel by these v
 \begin{Code}
 
 vec3 lighting = in_Emissive + in_Ambient;
-gl_FragColor = tex * lighting;
+gl_FragColor = tex * vec4(lighting, 1);
 
 \end{Code}
 

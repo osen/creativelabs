@@ -16,7 +16,9 @@ void main()
   vec3 lightDir = normalize(in_LightPos - ex_FragPos);
 
   float diff = max(dot(norm, lightDir), 0.0);
-  vec3 diffuse = diff * vec3(tex);
+  vec3 diffuse = diff * vec3(1, 1, 1);
 
-  gl_FragColor = vec4(diffuse, 1);
+  vec3 lighting = diffuse;
+
+  gl_FragColor = vec4(lighting, 1) * tex;
 }
