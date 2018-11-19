@@ -113,7 +113,6 @@ int main(int argc, char *argv[])
     model = glm::rotate(model, glm::radians(angle), glm::vec3(0, 1, 0));
     shader->setUniform("in_Model", model);
     shader->setUniform("in_Texture", texture);
-    shader->setViewport(glm::vec4(0, 0, windowWidth, windowHeight));
     shader->draw(rt, shape);
 
     glDisable(GL_DEPTH_TEST);
