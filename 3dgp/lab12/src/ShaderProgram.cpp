@@ -62,6 +62,13 @@ ShaderProgram::ShaderProgram(std::string vert, std::string frag)
 
   if(!success)
   {
+    GLint maxLength = 0;
+    glGetShaderiv(fragmentShaderId, GL_INFO_LOG_LENGTH, &maxLength);
+
+    std::vector<GLchar> errorLog(maxLength);
+    glGetShaderInfoLog(fragmentShaderId, maxLength, &maxLength, &errorLog[0]);
+    std::cout << &errorLog.at(0) << std::endl;
+
     throw std::exception();
   }
 

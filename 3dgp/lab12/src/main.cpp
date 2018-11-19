@@ -43,30 +43,14 @@ int main(int argc, char *argv[])
   ShaderProgram *shader = new ShaderProgram("simple.vert", "simple.frag");
   ShaderProgram *lightkeyShader = new ShaderProgram("lightkeypass.vert", "lightkeypass.frag");
   ShaderProgram *nullShader = new ShaderProgram("nullpass.vert", "nullpass.frag");
+  ShaderProgram *blurShader = new ShaderProgram("blur.vert", "blur.frag");
   ShaderProgram *mergeShader = new ShaderProgram("mergepass.vert", "mergepass.frag");
   RenderTexture *rt = new RenderTexture(512, 512);
   RenderTexture *lightkeyRt = new RenderTexture(512, 512);
+  RenderTexture *blurRt = new RenderTexture(512, 512);
+  RenderTexture *blur2Rt = new RenderTexture(512, 512);
+  RenderTexture *blur3Rt = new RenderTexture(512, 512);
   RenderTexture *mergeRt = new RenderTexture(512, 512);
-
-  VertexBuffer *positions = new VertexBuffer();
-  positions->add(glm::vec3(0.0f, 1.0f, 0.0f));
-  positions->add(glm::vec3(0.0f, 0.0f, 0.0f));
-  positions->add(glm::vec3(1.0f, 0.0f, 0.0f));
-  positions->add(glm::vec3(1.0f, 0.0f, 0.0f));
-  positions->add(glm::vec3(1.0f, 1.0f, 0.0f));
-  positions->add(glm::vec3(0.0f, 1.0f, 0.0f));
-
-  VertexBuffer *texCoords = new VertexBuffer();
-  texCoords->add(glm::vec2(0.0f, 0.0f));
-  texCoords->add(glm::vec2(0.0f, -1.0f));
-  texCoords->add(glm::vec2(1.0f, -1.0f));
-  texCoords->add(glm::vec2(1.0f, -1.0f));
-  texCoords->add(glm::vec2(1.0f, 0.0f));
-  texCoords->add(glm::vec2(0.0f, 0.0f));
-
-  VertexArray *uiShape = new VertexArray();
-  uiShape->setBuffer("in_Position", positions);
-  uiShape->setBuffer("in_TexCoord", texCoords);
 
   bool quit = false;
   float angle = 0;
@@ -122,12 +106,21 @@ int main(int argc, char *argv[])
     lightkeyShader->setUniform("in_Texture", rt);
     lightkeyShader->draw(lightkeyRt);
 
+    blurShader->setUniform("in_Texture", lightkeyRt);
+    blurShader->draw(blurRt);
+
+    blurShader->setUniform("in_Texture", blurRt);
+    blurShader->draw(blur2Rt);
+
+    blurShader->setUniform("in_Texture", blur2Rt);
+    blurShader->draw(blur3Rt);
+
     mergeShader->setUniform("in_TextureA", rt);
-    mergeShader->setUniform("in_TextureB", lightkeyRt);
+    mergeShader->setUniform("in_TextureB", blur3Rt);
     mergeShader->draw(mergeRt);
 
     nullShader->setViewport(glm::vec4(0, 0, windowWidth, windowHeight));
-    nullShader->setUniform("in_Texture", mergeRt);
+    nullShader->setUniform("in_Texture", rt);
     nullShader->draw();
 
     angle+=0.01f;
